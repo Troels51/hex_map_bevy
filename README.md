@@ -1,4 +1,5 @@
 ## Hex map in Bevy
+[![CI](https://github.com/Troels51/hex_map_bevy/actions/workflows/ci.yml/badge.svg)](https://github.com/Troels51/hex_map_bevy/actions/workflows/ci.yml)
 
 This is a small 3D application with a hex map. Hex art by Andreas Barbesgaard
 
