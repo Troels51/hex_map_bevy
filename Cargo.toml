@@ -32,7 +32,7 @@ dev = [
 bevy = { version = "0.6", default-features = false }
 bevy_kira_audio = { version = "0.8" }
 bevy_asset_loader = { version = "0.9" }
-bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", branch = "master" }
+bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", branch = "main" }
 bevy_4x_camera = {git = "https://github.com/Troels51/bevy_4x_camera.git", branch = "master"}
 rand = "0.8.3"
 hex2d = "1.0.0"
