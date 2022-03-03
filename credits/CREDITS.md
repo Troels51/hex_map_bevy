@@ -2,4 +2,5 @@
 
 ## Assets
 
-* Bevy icon: [MIT License](licenses/Bevy_MIT_License.md); Copyright (c) 2020 Carter Anderson
+* Textures: [No license] Copyright (c) 2022 Andreas Barbesgaard
+* 3D models: [No license] Copyright (c) 2022 Troels Dalsgaard Hoffmeyer
