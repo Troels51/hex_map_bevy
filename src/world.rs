@@ -314,7 +314,7 @@ fn update_chosen_hex_ui(
 }
 
 fn get_top_parent<'a>(
-    parent_query: &Query<'a, '_, &Parent>,
+    parent_query: &'a Query<'a, 'a, &Parent>,
     child: &'a Entity,
 ) -> &'a Parent
 {

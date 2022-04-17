@@ -13,7 +13,6 @@ fn main() {
             title: "Map of hexes".to_string(),
             width: 3000.,
             height: 1200.,
-            vsync: true,
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
