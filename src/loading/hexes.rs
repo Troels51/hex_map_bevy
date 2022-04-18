@@ -75,31 +75,31 @@ pub struct HexAssets {
     pub c007: Handle<Scene>,
     #[asset(path = "models/generated/C008.glb#Scene0")]
     pub c008: Handle<Scene>,
-    #[asset(path = "models/generated/d001.glb#Scene0")]
+    #[asset(path = "models/generated/D001.glb#Scene0")]
     pub d001: Handle<Scene>,
-    #[asset(path = "models/generated/d002.glb#Scene0")]
+    #[asset(path = "models/generated/D002.glb#Scene0")]
     pub d002: Handle<Scene>,
-    #[asset(path = "models/generated/d003.glb#Scene0")]
+    #[asset(path = "models/generated/D003.glb#Scene0")]
     pub d003: Handle<Scene>,
-    #[asset(path = "models/generated/d004.glb#Scene0")]
+    #[asset(path = "models/generated/D004.glb#Scene0")]
     pub d004: Handle<Scene>,
-    #[asset(path = "models/generated/d005.glb#Scene0")]
+    #[asset(path = "models/generated/D005.glb#Scene0")]
     pub d005: Handle<Scene>,
-    #[asset(path = "models/generated/d006.glb#Scene0")]
+    #[asset(path = "models/generated/D006.glb#Scene0")]
     pub d006: Handle<Scene>,
-    #[asset(path = "models/generated/d007.glb#Scene0")]
+    #[asset(path = "models/generated/D007.glb#Scene0")]
     pub d007: Handle<Scene>,
-    #[asset(path = "models/generated/d008.glb#Scene0")]
+    #[asset(path = "models/generated/D008.glb#Scene0")]
     pub d008: Handle<Scene>,
-    #[asset(path = "models/generated/d009.glb#Scene0")]
+    #[asset(path = "models/generated/D009.glb#Scene0")]
     pub d009: Handle<Scene>,
-    #[asset(path = "models/generated/d010.glb#Scene0")]
+    #[asset(path = "models/generated/D010.glb#Scene0")]
     pub d010: Handle<Scene>,
-    #[asset(path = "models/generated/d011.glb#Scene0")]
+    #[asset(path = "models/generated/D011.glb#Scene0")]
     pub d011: Handle<Scene>,
-    #[asset(path = "models/generated/d012.glb#Scene0")]
+    #[asset(path = "models/generated/D012.glb#Scene0")]
     pub d012: Handle<Scene>,
-    #[asset(path = "models/generated/d013.glb#Scene0")]
+    #[asset(path = "models/generated/D013.glb#Scene0")]
     pub d013: Handle<Scene>,
     #[asset(path = "models/generated/M001.glb#Scene0")]
     pub m001: Handle<Scene>,
@@ -264,31 +264,31 @@ pub struct HexImageAssets {
     pub c007: Handle<Image>,
     #[asset(path = "textures/C008.png")]
     pub c008: Handle<Image>,
-    #[asset(path = "textures/d001_F.png")]
+    #[asset(path = "textures/D001_F.png")]
     pub d001: Handle<Image>,
-    #[asset(path = "textures/d002_F.png")]
+    #[asset(path = "textures/D002_F.png")]
     pub d002: Handle<Image>,
-    #[asset(path = "textures/d003_F.png")]
+    #[asset(path = "textures/D003_F.png")]
     pub d003: Handle<Image>,
-    #[asset(path = "textures/d004_F.png")]
+    #[asset(path = "textures/D004_F.png")]
     pub d004: Handle<Image>,
-    #[asset(path = "textures/d005_F.png")]
+    #[asset(path = "textures/D005_F.png")]
     pub d005: Handle<Image>,
-    #[asset(path = "textures/d006_F.png")]
+    #[asset(path = "textures/D006_F.png")]
     pub d006: Handle<Image>,
-    #[asset(path = "textures/d007_F.png")]
+    #[asset(path = "textures/D007_F.png")]
     pub d007: Handle<Image>,
-    #[asset(path = "textures/d008_F.png")]
+    #[asset(path = "textures/D008_F.png")]
     pub d008: Handle<Image>,
-    #[asset(path = "textures/d009_F.png")]
+    #[asset(path = "textures/D009_F.png")]
     pub d009: Handle<Image>,
-    #[asset(path = "textures/d010_F.png")]
+    #[asset(path = "textures/D010_F.png")]
     pub d010: Handle<Image>,
-    #[asset(path = "textures/d011_F.png")]
+    #[asset(path = "textures/D011_F.png")]
     pub d011: Handle<Image>,
-    #[asset(path = "textures/d012_F.png")]
+    #[asset(path = "textures/D012_F.png")]
     pub d012: Handle<Image>,
-    #[asset(path = "textures/d013_F.png")]
+    #[asset(path = "textures/D013_F.png")]
     pub d013: Handle<Image>,
     #[asset(path = "textures/M001_F.png")]
     pub m001: Handle<Image>,
