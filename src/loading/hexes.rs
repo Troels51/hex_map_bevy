@@ -196,57 +196,57 @@ impl Index<usize> for HexAssets {
 pub struct HexImageAssets {
     #[asset(path = "textures/bland.png")]
     pub bland: Handle<Image>,
-    #[asset(path = "textures/A001 F.png")]
+    #[asset(path = "textures/A001_F.png")]
     pub a001: Handle<Image>,
-    #[asset(path = "textures/A002 F.png")]
+    #[asset(path = "textures/A002_F.png")]
     pub a002: Handle<Image>,
-    #[asset(path = "textures/A003 F.png")]
+    #[asset(path = "textures/A003_F.png")]
     pub a003: Handle<Image>,
-    #[asset(path = "textures/A004 F.png")]
+    #[asset(path = "textures/A004_F.png")]
     pub a004: Handle<Image>,
-    #[asset(path = "textures/A005 F.png")]
+    #[asset(path = "textures/A005_F.png")]
     pub a005: Handle<Image>,
-    #[asset(path = "textures/A006 F.png")]
+    #[asset(path = "textures/A006_F.png")]
     pub a006: Handle<Image>,
-    #[asset(path = "textures/A007 F.png")]
+    #[asset(path = "textures/A007_F.png")]
     pub a007: Handle<Image>,
-    #[asset(path = "textures/A008 F.png")]
+    #[asset(path = "textures/A008_F.png")]
     pub a008: Handle<Image>,
-    #[asset(path = "textures/A009 F.png")]
+    #[asset(path = "textures/A009_F.png")]
     pub a009: Handle<Image>,
-    #[asset(path = "textures/A010 F.png")]
+    #[asset(path = "textures/A010_F.png")]
     pub a010: Handle<Image>,
-    #[asset(path = "textures/A011 F.png")]
+    #[asset(path = "textures/A011_F.png")]
     pub a011: Handle<Image>,
-    #[asset(path = "textures/A012 F.png")]
+    #[asset(path = "textures/A012_F.png")]
     pub a012: Handle<Image>,
-    #[asset(path = "textures/A013 F.png")]
+    #[asset(path = "textures/A013_F.png")]
     pub a013: Handle<Image>,
-    #[asset(path = "textures/A014 F.png")]
+    #[asset(path = "textures/A014_F.png")]
     pub a014: Handle<Image>,
-    #[asset(path = "textures/A015 F.png")]
+    #[asset(path = "textures/A015_F.png")]
     pub a015: Handle<Image>,
-    #[asset(path = "textures/A016 F.png")]
+    #[asset(path = "textures/A016_F.png")]
     pub a016: Handle<Image>,
-    #[asset(path = "textures/A017 F.png")]
+    #[asset(path = "textures/A017_F.png")]
     pub a017: Handle<Image>,
-    #[asset(path = "textures/A018 F.png")]
+    #[asset(path = "textures/A018_F.png")]
     pub a018: Handle<Image>,
-    #[asset(path = "textures/A019 F.png")]
+    #[asset(path = "textures/A019_F.png")]
     pub a019: Handle<Image>,
-    #[asset(path = "textures/A020 F.png")]
+    #[asset(path = "textures/A020_F.png")]
     pub a020: Handle<Image>,
-    #[asset(path = "textures/A021 F.png")]
+    #[asset(path = "textures/A021_F.png")]
     pub a021: Handle<Image>,
-    #[asset(path = "textures/A022 F.png")]
+    #[asset(path = "textures/A022_F.png")]
     pub a022: Handle<Image>,
-    #[asset(path = "textures/A023 F.png")]
+    #[asset(path = "textures/A023_F.png")]
     pub a023: Handle<Image>,
-    #[asset(path = "textures/A024 F.png")]
+    #[asset(path = "textures/A024_F.png")]
     pub a024: Handle<Image>,
-    #[asset(path = "textures/A025 F.png")]
+    #[asset(path = "textures/A025_F.png")]
     pub a025: Handle<Image>,
-    #[asset(path = "textures/A026 F.png")]
+    #[asset(path = "textures/A026_F.png")]
     pub a026: Handle<Image>,
     #[asset(path = "textures/C001.png")]
     pub c001: Handle<Image>,
@@ -264,51 +264,51 @@ pub struct HexImageAssets {
     pub c007: Handle<Image>,
     #[asset(path = "textures/C008.png")]
     pub c008: Handle<Image>,
-    #[asset(path = "textures/d001 F.png")]
+    #[asset(path = "textures/d001_F.png")]
     pub d001: Handle<Image>,
-    #[asset(path = "textures/d002 F.png")]
+    #[asset(path = "textures/d002_F.png")]
     pub d002: Handle<Image>,
-    #[asset(path = "textures/d003 F.png")]
+    #[asset(path = "textures/d003_F.png")]
     pub d003: Handle<Image>,
-    #[asset(path = "textures/d004 F.png")]
+    #[asset(path = "textures/d004_F.png")]
     pub d004: Handle<Image>,
-    #[asset(path = "textures/d005 F.png")]
+    #[asset(path = "textures/d005_F.png")]
     pub d005: Handle<Image>,
-    #[asset(path = "textures/d006 F.png")]
+    #[asset(path = "textures/d006_F.png")]
     pub d006: Handle<Image>,
-    #[asset(path = "textures/d007 F.png")]
+    #[asset(path = "textures/d007_F.png")]
     pub d007: Handle<Image>,
-    #[asset(path = "textures/d008 F.png")]
+    #[asset(path = "textures/d008_F.png")]
     pub d008: Handle<Image>,
-    #[asset(path = "textures/d009 F.png")]
+    #[asset(path = "textures/d009_F.png")]
     pub d009: Handle<Image>,
-    #[asset(path = "textures/d010 F.png")]
+    #[asset(path = "textures/d010_F.png")]
     pub d010: Handle<Image>,
-    #[asset(path = "textures/d011 F.png")]
+    #[asset(path = "textures/d011_F.png")]
     pub d011: Handle<Image>,
-    #[asset(path = "textures/d012 F.png")]
+    #[asset(path = "textures/d012_F.png")]
     pub d012: Handle<Image>,
-    #[asset(path = "textures/d013 F.png")]
+    #[asset(path = "textures/d013_F.png")]
     pub d013: Handle<Image>,
-    #[asset(path = "textures/M001 F.png")]
+    #[asset(path = "textures/M001_F.png")]
     pub m001: Handle<Image>,
-    #[asset(path = "textures/M002 F.png")]
+    #[asset(path = "textures/M002_F.png")]
     pub m002: Handle<Image>,
-    #[asset(path = "textures/M003 F.png")]
+    #[asset(path = "textures/M003_F.png")]
     pub m003: Handle<Image>,
-    #[asset(path = "textures/M004 F.png")]
+    #[asset(path = "textures/M004_F.png")]
     pub m004: Handle<Image>,
-    #[asset(path = "textures/M005 F.png")]
+    #[asset(path = "textures/M005_F.png")]
     pub m005: Handle<Image>,
-    #[asset(path = "textures/M006 F.png")]
+    #[asset(path = "textures/M006_F.png")]
     pub m006: Handle<Image>,
-    #[asset(path = "textures/M007 F.png")]
+    #[asset(path = "textures/M007_F.png")]
     pub m007: Handle<Image>,
-    #[asset(path = "textures/M008 F.png")]
+    #[asset(path = "textures/M008_F.png")]
     pub m008: Handle<Image>,
-    #[asset(path = "textures/M009 F.png")]
+    #[asset(path = "textures/M009_F.png")]
     pub m009: Handle<Image>,
-    #[asset(path = "textures/M010 F.png")]
+    #[asset(path = "textures/M010_F.png")]
     pub m010: Handle<Image>,
 }
 
