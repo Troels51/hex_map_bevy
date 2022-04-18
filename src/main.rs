@@ -1,6 +1,6 @@
 use bevy::DefaultPlugins;
-use hex_map_bevy::GameState;
 use hex_map_bevy::GamePlugin;
+use hex_map_bevy::GameState;
 
 mod loading;
 
@@ -18,5 +18,4 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(GamePlugin)
         .run()
-
 }

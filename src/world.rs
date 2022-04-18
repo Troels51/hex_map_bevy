@@ -1,44 +1,41 @@
 pub struct WorldPlugin;
 use std::ops::Index;
 
-use bevy::{ecs::schedule::SystemSet, prelude::*};
-use bevy::render::{camera::{Camera, PerspectiveProjection}};
-use bevy_4x_camera::{CameraRigBundle};
-use hex2d::{self, Coordinate, Spacing, Spin};
-use bevy_mod_picking::*;
 use bevy::app::App;
+use bevy::render::camera::{Camera, PerspectiveProjection};
+use bevy::{ecs::schedule::SystemSet, prelude::*};
+use bevy_4x_camera::CameraRigBundle;
+use bevy_mod_picking::*;
+use hex2d::{self, Coordinate, Spacing, Spin};
 
-use crate::{GameState, loading};
-
+use crate::{loading, GameState};
 
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
-        app
-        .insert_resource(SceneInstance::default())
-        .insert_resource(ChoosenHex(1))
-
-        .add_system_set( SystemSet::on_enter(GameState::Playing).with_system(setup))
-        .add_system_set( SystemSet::on_enter(GameState::Playing).with_system(setup_ui))
-        .add_system_set( SystemSet::on_exit(GameState::Playing).with_system(teardown))
-        .add_system_set( SystemSet::on_exit(GameState::GameOver).with_system(teardown))
-        .add_system_set( SystemSet::on_update(GameState::Playing).with_system(scene_update))
-        .add_system_set( SystemSet::on_update(GameState::Playing).with_system(click_events))
-        .add_system_set( SystemSet::on_update(GameState::Playing).with_system(rotate_hex))
-        .add_system_set( SystemSet::on_update(GameState::Playing).with_system(choose_hex))
-        .add_system_set( SystemSet::on_update(GameState::Playing).with_system(update_chosen_hex_ui));
+        app.insert_resource(SceneInstance::default())
+            .insert_resource(ChoosenHex(1))
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui))
+            .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
+            .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(scene_update))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(click_events))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(rotate_hex))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(choose_hex))
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(update_chosen_hex_ui),
+            );
     }
 }
-
 
 //Constants
 const SPACING: Spacing = Spacing::PointyTop(1.05f32);
 
+const BOARD_SIZE: i32 = 5;
 
-const BOARD_SIZE : i32 = 5;
-
-#[derive(Debug, Clone, Copy,Component)]
+#[derive(Debug, Clone, Copy, Component)]
 pub enum CellType {
     Bland,
     Trees,
@@ -55,7 +52,7 @@ fn setup(
     mut commands: Commands,
     mut scene_spawner: ResMut<SceneSpawner>,
     mut scene_instance: ResMut<SceneInstance>,
-    hex_assets: Res<loading::hexes::HexAssets>
+    hex_assets: Res<loading::hexes::HexAssets>,
 ) {
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
@@ -74,7 +71,8 @@ fn setup(
     commands.spawn_bundle(UiCameraBundle::default());
 
     //Spawn camera
-    commands.spawn_bundle(CameraRigBundle::default())
+    commands
+        .spawn_bundle(CameraRigBundle::default())
         // camera
         .with_children(|cb| {
             cb.spawn_bundle(PerspectiveCameraBundle {
@@ -90,7 +88,7 @@ fn setup(
         });
 
     // spawn the game board
-    let center = Coordinate::new(0,0);
+    let center = Coordinate::new(0, 0);
     for ring_radius in 0..BOARD_SIZE {
         let ring = center.ring_iter(ring_radius, Spin::CCW(hex2d::Direction::XY));
         for cell_coord in ring {
@@ -102,9 +100,9 @@ fn setup(
                     CellCoord(cell_coord),
                     CellType::Bland,
                 ))
-                
                 .with_children(|parent| {
-                    let instance_id = scene_spawner.spawn_as_child(hex_assets.bland.clone(), parent.parent_entity());
+                    let instance_id = scene_spawner
+                        .spawn_as_child(hex_assets.bland.clone(), parent.parent_entity());
                     scene_instance.0.push(instance_id);
                 });
         }
@@ -114,7 +112,7 @@ fn setup(
 fn setup_ui(
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,
-    hex_image_assets: Res<loading::hexes::HexImageAssets>
+    hex_image_assets: Res<loading::hexes::HexImageAssets>,
 ) {
     // ui camera
     commands.spawn_bundle(UiCameraBundle::default());
@@ -175,17 +173,16 @@ fn setup_ui(
                         });
                 });
             // right vertical fill
-            parent
-                .spawn_bundle(NodeBundle {
-                    style: Style {
-                        flex_direction: FlexDirection::ColumnReverse,
-                        justify_content: JustifyContent::Center,
-                        size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                        ..Default::default()
-                    },
-                    color: Color::rgb(0.15, 0.15, 0.15).into(),
+            parent.spawn_bundle(NodeBundle {
+                style: Style {
+                    flex_direction: FlexDirection::ColumnReverse,
+                    justify_content: JustifyContent::Center,
+                    size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
                     ..Default::default()
-                });
+                },
+                color: Color::rgb(0.15, 0.15, 0.15).into(),
+                ..Default::default()
+            });
             // absolute positioning
             parent
                 .spawn_bundle(NodeBundle {
@@ -204,16 +201,17 @@ fn setup_ui(
                     ..Default::default()
                 })
                 .with_children(|parent| {
-                    parent.spawn_bundle(ImageBundle {
-                        style: Style {
-                            size: Size::new(Val::Px(500.0), Val::Auto),
+                    parent
+                        .spawn_bundle(ImageBundle {
+                            style: Style {
+                                size: Size::new(Val::Px(500.0), Val::Auto),
+                                ..Default::default()
+                            },
+                            image: hex_image_assets.bland.clone().into(),
                             ..Default::default()
-                        },
-                        image: hex_image_assets.bland.clone().into(),
-                        ..Default::default()
-                    }).insert(HexChooserUI);
+                        })
+                        .insert(HexChooserUI);
                 });
-           
         });
 }
 
@@ -229,16 +227,17 @@ fn scene_update(
     let mut counter = 0;
     while let Some(instance_id) = scene_instance.0.pop() {
         if let Some(entity_iter) = scene_spawner.iter_instance_entities(instance_id) {
-                entity_iter.for_each(|entity| {
-                    commands
-                        .entity(entity)
-                        .insert_bundle(PickableBundle::default());
-                });
-        }
-        else {
+            entity_iter.for_each(|entity| {
+                commands
+                    .entity(entity)
+                    .insert_bundle(PickableBundle::default());
+            });
+        } else {
             counter += 1;
-            if counter > 1000 {return};
-            
+            if counter > 1000 {
+                return;
+            };
+
             scene_instance.0.push(instance_id); //I know this is dumb
         }
     }
@@ -254,21 +253,24 @@ fn click_events(
     mut commands: Commands,
     hex_assets: Res<loading::hexes::HexAssets>,
     chosen_hex: Res<ChoosenHex>,
-){
+) {
     for event in events.iter() {
         if let PickingEvent::Clicked(tile) = event {
             let parent = get_top_parent(&parent_query, tile);
-            let cellcoord :&CellCoord = cellcord_query.get_component(parent.0).unwrap();
-            let position :&Transform = transfrom_query.get_component(parent.0).unwrap();
+            let cellcoord: &CellCoord = cellcord_query.get_component(parent.0).unwrap();
+            let position: &Transform = transfrom_query.get_component(parent.0).unwrap();
             commands
                 .spawn_bundle((
                     position.clone(),
                     GlobalTransform::identity(),
                     cellcoord.clone(),
                     CellType::Trees,
-                ))   
+                ))
                 .with_children(|parent_1| {
-                    let instance_id = scene_spawner.spawn_as_child(hex_assets.index(chosen_hex.0).clone(), parent_1.parent_entity());
+                    let instance_id = scene_spawner.spawn_as_child(
+                        hex_assets.index(chosen_hex.0).clone(),
+                        parent_1.parent_entity(),
+                    );
                     scene_instance.0.push(instance_id);
                 });
             commands.entity(parent.0).despawn_recursive();
@@ -277,47 +279,36 @@ fn click_events(
 }
 
 fn rotate_hex(
-    keys:  Res<Input<KeyCode>>,
+    keys: Res<Input<KeyCode>>,
     parent_query: Query<&Parent>,
     hover_query: Query<(Entity, &Hover)>,
     mut transform: Query<&mut Transform>,
-)
-{
+) {
     if keys.just_pressed(KeyCode::R) {
-        if let Some(child) = hover_query.iter().find(|(_, h)| h.hovered() ) {
+        if let Some(child) = hover_query.iter().find(|(_, h)| h.hovered()) {
             let parent = get_top_parent(&parent_query, &child.0);
             let mut trans = transform.get_mut(parent.0).unwrap();
-            trans.rotate(Quat::from_axis_angle(Vec3::Y, std::f32::consts::PI/3.0))
+            trans.rotate(Quat::from_axis_angle(Vec3::Y, std::f32::consts::PI / 3.0))
         }
     }
 }
-fn choose_hex(
-    keys:  Res<Input<KeyCode>>,
-    mut chosen_hex: ResMut<ChoosenHex>,
-)
-{
+fn choose_hex(keys: Res<Input<KeyCode>>, mut chosen_hex: ResMut<ChoosenHex>) {
     if keys.just_pressed(KeyCode::F) {
-        chosen_hex.0 = (chosen_hex.0 + 1) % 58 ;
-
+        chosen_hex.0 = (chosen_hex.0 + 1) % 58;
     }
 }
 
 fn update_chosen_hex_ui(
-    mut ui:  Query<&mut UiImage, With<HexChooserUI> >,
+    mut ui: Query<&mut UiImage, With<HexChooserUI>>,
     chosen_hex: ResMut<ChoosenHex>,
     hex_assets: Res<loading::hexes::HexImageAssets>,
-)
-{
+) {
     if chosen_hex.is_changed() {
         ui.single_mut().0 = hex_assets[chosen_hex.0].clone();
     }
 }
 
-fn get_top_parent<'a>(
-    parent_query: &'a Query<'a, 'a, &Parent>,
-    child: &'a Entity,
-) -> &'a Parent
-{
+fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entity) -> &'a Parent {
     let parent = parent_query.get(*child).unwrap();
     let parent = parent_query.get(parent.0).unwrap();
     let parent = parent_query.get(parent.0).unwrap();
@@ -332,6 +323,6 @@ fn teardown(mut commands: Commands, entities: Query<Entity, Without<Camera>>) {
 }
 impl CellCoord {
     fn default() -> CellCoord {
-        CellCoord (Coordinate { x : 0, y : 0})
+        CellCoord(Coordinate { x: 0, y: 0 })
     }
 }

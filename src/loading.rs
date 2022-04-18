@@ -6,7 +6,6 @@ pub mod hexes;
 pub struct LoadingPlugin;
 
 impl Plugin for LoadingPlugin {
-
     fn build(&self, app: &mut App) {
         AssetLoader::new(GameState::Loading)
             .with_collection::<hexes::HexAssets>()
