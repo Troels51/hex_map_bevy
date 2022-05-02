@@ -1,4 +1,3 @@
-use core::time;
 use std::ops::Index;
 
 use bevy::app::App;
@@ -11,7 +10,7 @@ use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
 use crate::loading::hexes::{HexAssets, HexImageAssets};
-use crate::{loading, GameState};
+use crate::GameState;
 
 pub struct WorldPlugin;
 
@@ -43,11 +42,6 @@ const BOARD_SIZE: i32 = 5;
 const BSIZE: usize = 20;
 
 #[derive(Debug, Clone, Copy, Component)]
-pub enum CellType {
-    Bland,
-    Trees,
-}
-#[derive(Debug, Clone, Copy, Component)]
 pub struct CellCoord(hex2d::Coordinate);
 
 struct ChoosenHex(usize);
@@ -63,7 +57,7 @@ fn setup(
     hex_desc_assets: Res<Assets<Hex>>,
     mut board: ResMut<Board>,
 ) {
-    for (handle, hex) in hex_desc_assets.iter() {
+    for (_handle, hex) in hex_desc_assets.iter() {
         board.add_possible_hex(hex);
     }
     commands.insert_resource(AmbientLight {
@@ -285,12 +279,7 @@ fn click_events(
             let cellcoord: &CellCoord = cellcord_query.get_component(parent.0).unwrap();
             let position: &Transform = transfrom_query.get_component(parent.0).unwrap();
             commands
-                .spawn_bundle((
-                    position.clone(),
-                    GlobalTransform::identity(),
-                    cellcoord.clone(),
-                    CellType::Trees,
-                ))
+                .spawn_bundle((*position, GlobalTransform::identity(), *cellcoord))
                 .with_children(|parent_1| {
                     let instance_id = scene_spawner.spawn_as_child(
                         hex_assets.index(chosen_hex.0).clone(),
@@ -337,7 +326,7 @@ fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entit
     let parent = parent_query.get(*child).unwrap();
     let parent = parent_query.get(parent.0).unwrap();
     let parent = parent_query.get(parent.0).unwrap();
-    return parent;
+    parent
 }
 
 // remove all entities that are not a camera

@@ -1,7 +1,7 @@
 use std::ops::Index;
 
-use bevy::{core::FixedTimestep, ecs::schedule::SystemSet, prelude::*};
-use bevy_asset_loader::{AssetCollection, AssetLoader};
+use bevy::prelude::*;
+use bevy_asset_loader::AssetCollection;
 
 #[derive(AssetCollection)]
 pub struct HexAssets {

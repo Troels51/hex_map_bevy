@@ -3,21 +3,16 @@ mod loading;
 mod world;
 
 use crate::loading::LoadingPlugin;
-use std::ops::Index;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
-use bevy::render::camera::{Camera, PerspectiveProjection};
-use bevy::{ecs::schedule::SystemSet, prelude::*};
-use bevy_4x_camera::{CameraRigBundle, FourXCameraPlugin};
-use bevy_asset_loader::AssetLoader;
-use bevy_asset_ron::RonAssetPlugin;
-use bevy_editor_pls::EditorPlugin;
+
+use bevy_4x_camera::FourXCameraPlugin;
+
 use bevy_mod_picking::*;
 use bevy_mod_picking::{DebugCursorPickingPlugin, InteractablePickingPlugin};
-use hex2d::{self, Coordinate, Spacing, Spin};
 use world::WorldPlugin;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]

@@ -1,10 +1,6 @@
-use bevy::{
-    prelude::{Component, ParamSet},
-    reflect::TypeUuid,
-};
-use hex2d::{Angle, Coordinate, Direction};
+use bevy::{prelude::Component, reflect::TypeUuid};
+use hex2d::Angle;
 use serde::{Deserialize, Serialize};
-use Direction::*;
 
 #[derive(Debug)]
 pub struct Board {
@@ -76,7 +72,7 @@ impl Default for Hex {
 impl Hex {
     pub fn get_matching_rotations(&self, matching: &HexSides) -> Vec<Hex> {
         let mut rotations: Vec<u8> = Vec::new();
-        let mut sides = self.sides.clone();
+        let mut sides = self.sides;
         for i in 0..6 {
             if sides == *matching {
                 rotations.push(i as u8);
@@ -125,8 +121,7 @@ impl Board {
             return self
                 .get_possible_matching_hexes(&hex.sides)
                 .iter()
-                .map(|h| h.get_matching_rotations(&hex.sides))
-                .flatten()
+                .flat_map(|h| h.get_matching_rotations(&hex.sides))
                 .collect();
         }
         Vec::new()
@@ -147,7 +142,7 @@ impl Board {
     }
 
     pub fn get_rotated_hex_at_coord(&self, coord: hex2d::Coordinate, hex: Hex) -> Option<Hex> {
-        let mut hex = hex;
+        let hex = hex;
         let possible = self.get(coord)?;
         let rotations = possible.get_matching_rotations(&hex.sides);
         Some(rotations.get(0).unwrap().clone())
@@ -162,6 +157,7 @@ fn new_board_test() {
 
 #[test]
 fn set_hex_test() {
+    use hex2d::{Coordinate, Direction::*};
     let mut b = Board::new(3, 3);
     let hex = Hex {
         sides: [
@@ -188,6 +184,7 @@ fn set_hex_test() {
 
 #[test]
 fn set_rotated_hex_test() {
+    use hex2d::{Coordinate, Direction::*};
     let mut b = Board::new(3, 3);
     let hex = Hex {
         sides: [
@@ -274,6 +271,8 @@ fn match_hex_side_test() {
 
 #[test]
 fn possibility_test() {
+    use hex2d::{Coordinate, Direction::*};
+
     let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
@@ -300,6 +299,7 @@ fn possibility_test() {
 
 #[test]
 fn possible_matching_test() {
+    use hex2d::{Coordinate, Direction::*};
     let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
@@ -354,5 +354,4 @@ fn matching_rotations_test() {
     ]);
     let rotations: Vec<u8> = rotations.iter().map(|x| x.rotation).collect();
     assert_eq!(rotations, vec![1, 2, 3]);
-    assert!(false);
 }

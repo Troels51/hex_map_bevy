@@ -1,7 +1,6 @@
-use bevy::prelude::{App, ClearColor, Color, Msaa, WindowDescriptor};
+use bevy::prelude::{App, Msaa, WindowDescriptor};
 use bevy::DefaultPlugins;
 use hex_map_bevy::GamePlugin;
-use hex_map_bevy::GameState;
 
 fn main() {
     App::new()

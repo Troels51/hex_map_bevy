@@ -1,14 +1,10 @@
 use bevy::asset::HandleUntyped;
 use bevy::ecs::world::World;
-use bevy::{
-    asset::AssetPath,
-    prelude::{AssetServer, Bundle, Component, Handle, Res, Scene},
-    reflect::TypeUuid,
-};
+use bevy::prelude::{AssetServer, Component, Handle};
 use bevy_asset_loader::AssetCollection;
 use serde::{Deserialize, Serialize};
 
-use crate::board::{Hex, Side, HEX_SIDES};
+use crate::board::Hex;
 
 #[derive(Component, Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct Angle(hex2d::Angle);
