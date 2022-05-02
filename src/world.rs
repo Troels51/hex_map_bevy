@@ -1,4 +1,4 @@
-pub struct WorldPlugin;
+use core::time;
 use std::ops::Index;
 
 use bevy::app::App;
@@ -7,8 +7,13 @@ use bevy::{ecs::schedule::SystemSet, prelude::*};
 use bevy_4x_camera::CameraRigBundle;
 use bevy_mod_picking::*;
 use hex2d::{self, Coordinate, Spacing, Spin};
+use rand::prelude::IteratorRandom;
 
+use crate::board::{Hex, Board};
+use crate::loading::hexes::{HexAssets, HexImageAssets};
 use crate::{loading, GameState};
+
+pub struct WorldPlugin;
 
 /// This plugin handles player related stuff like movement
 /// Player logic is only active during the State `GameState::Playing`
@@ -16,6 +21,7 @@ impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SceneInstance::default())
             .insert_resource(ChoosenHex(1))
+            .insert_resource(Board::new(BSIZE, BSIZE))
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui))
             .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
@@ -34,6 +40,8 @@ impl Plugin for WorldPlugin {
 const SPACING: Spacing = Spacing::PointyTop(1.05f32);
 
 const BOARD_SIZE: i32 = 5;
+const BSIZE: usize = 20;
+
 
 #[derive(Debug, Clone, Copy, Component)]
 pub enum CellType {
@@ -52,8 +60,16 @@ fn setup(
     mut commands: Commands,
     mut scene_spawner: ResMut<SceneSpawner>,
     mut scene_instance: ResMut<SceneInstance>,
-    hex_assets: Res<loading::hexes::HexAssets>,
+    hex_model_assets: Res<HexAssets>,
+    hex_desc_assets: Res<Assets<Hex>>,
+    mut board: ResMut<Board>,
 ) {
+    
+    for (handle, hex) in hex_desc_assets.iter() {
+        dbg!(&hex.sides);
+        dbg!(&hex.name);
+        board.add_possible_hex(hex);
+    }
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.3,
@@ -88,23 +104,32 @@ fn setup(
         });
 
     // spawn the game board
-    let center = Coordinate::new(0, 0);
+    let center = Coordinate::new(5, 5);
     for ring_radius in 0..BOARD_SIZE {
         let ring = center.ring_iter(ring_radius, Spin::CCW(hex2d::Direction::XY));
         for cell_coord in ring {
             let pixel = cell_coord.to_pixel(SPACING);
-            commands
-                .spawn_bundle((
-                    Transform::from_xyz(pixel.0, 0 as f32, pixel.1),
-                    GlobalTransform::identity(),
-                    CellCoord(cell_coord),
-                    CellType::Bland,
-                ))
-                .with_children(|parent| {
-                    let instance_id = scene_spawner
-                        .spawn_as_child(hex_assets.bland.clone(), parent.parent_entity());
-                    scene_instance.0.push(instance_id);
-                });
+            
+            let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord);
+            if let Some(hex) = posibility_space.iter().choose(&mut rand::thread_rng()) {
+                board.set(cell_coord, hex.clone());
+                let model = hex_model_assets.get(hex.name.as_str());
+                let mut transform = Transform::from_xyz(pixel.0, 0 as f32, pixel.1);
+                transform.rotate(Quat::from_axis_angle(Vec3::Y, hex.rotation as f32 * -std::f32::consts::PI/3.0));
+    
+                commands
+                    .spawn_bundle((
+                        transform,
+                        GlobalTransform::identity(),
+                        CellCoord(cell_coord),
+                    ))
+                    .with_children(|parent| {
+                        let instance_id =
+                            scene_spawner.spawn_as_child(model.clone(), parent.parent_entity());
+                        scene_instance.0.push(instance_id);
+                    });
+            }
+
         }
     }
 }
@@ -112,7 +137,7 @@ fn setup(
 fn setup_ui(
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,
-    hex_image_assets: Res<loading::hexes::HexImageAssets>,
+    hex_image_assets: Res<HexImageAssets>,
 ) {
     // ui camera
     commands.spawn_bundle(UiCameraBundle::default());
@@ -251,7 +276,7 @@ fn click_events(
     mut scene_spawner: ResMut<SceneSpawner>,
     mut scene_instance: ResMut<SceneInstance>,
     mut commands: Commands,
-    hex_assets: Res<loading::hexes::HexAssets>,
+    hex_assets: Res<HexAssets>,
     chosen_hex: Res<ChoosenHex>,
 ) {
     for event in events.iter() {
@@ -288,7 +313,7 @@ fn rotate_hex(
         if let Some(child) = hover_query.iter().find(|(_, h)| h.hovered()) {
             let parent = get_top_parent(&parent_query, &child.0);
             let mut trans = transform.get_mut(parent.0).unwrap();
-            trans.rotate(Quat::from_axis_angle(Vec3::Y, std::f32::consts::PI / 3.0))
+            trans.rotate(Quat::from_axis_angle(Vec3::Y, -std::f32::consts::PI / 3.0))
         }
     }
 }
@@ -301,7 +326,7 @@ fn choose_hex(keys: Res<Input<KeyCode>>, mut chosen_hex: ResMut<ChoosenHex>) {
 fn update_chosen_hex_ui(
     mut ui: Query<&mut UiImage, With<HexChooserUI>>,
     chosen_hex: ResMut<ChoosenHex>,
-    hex_assets: Res<loading::hexes::HexImageAssets>,
+    hex_assets: Res<HexImageAssets>,
 ) {
     if chosen_hex.is_changed() {
         ui.single_mut().0 = hex_assets[chosen_hex.0].clone();
@@ -319,10 +344,5 @@ fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entit
 fn teardown(mut commands: Commands, entities: Query<Entity, Without<Camera>>) {
     for entity in entities.iter() {
         commands.entity(entity).despawn_recursive();
-    }
-}
-impl CellCoord {
-    fn default() -> CellCoord {
-        CellCoord(Coordinate { x: 0, y: 0 })
     }
 }

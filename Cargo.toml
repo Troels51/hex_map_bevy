@@ -32,19 +32,18 @@ dev = [
 bevy = { version = "0.7", default-features = false }
 bevy_kira_audio = { version = "0.9" }
 bevy_asset_loader = { version = "0.10" }
-bevy_mod_picking = { git = "https://github.com/obsgolem/bevy_mod_picking", branch = "release" } #replace this with aevyrie when updated to 0.7
+bevy_mod_picking = "0.6.1"
 bevy_4x_camera = {git = "https://github.com/Troels51/bevy_4x_camera.git", branch = "master"}
+bevy_proto = "0.4.0"
+typetag = "0.1"
+serde = "1.0"
 rand = "0.8.3"
-hex2d = "1.0.0"
+hex2d = "1.1.0"
 #bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls.git", branch = "main"}
-
-
+bevy_asset_ron = "0.4"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 winit = { version = "0.25", features=["x11"]}
 
 [build-dependencies]
 embed-resource = "1.4"
-
-[patch.crates-io]
-bevy_mod_raycast = { git = "https://github.com/obsgolem/bevy_mod_raycast", branch = "release" }

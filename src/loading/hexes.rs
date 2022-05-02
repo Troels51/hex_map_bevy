@@ -192,6 +192,72 @@ impl Index<usize> for HexAssets {
     }
 }
 
+impl HexAssets {
+    pub fn get(&self, key: &str) -> &Handle<Scene> {
+        match key {
+            "bland" => &self.bland,
+            "A001" => &self.a001,
+            "A002" => &self.a002,
+            "A003" => &self.a003,
+            "A004" => &self.a004,
+            "A005" => &self.a005,
+            "A006" => &self.a006,
+            "A007" => &self.a007,
+            "A008" => &self.a008,
+            "A009" => &self.a009,
+            "A010" => &self.a010,
+            "A011" => &self.a011,
+            "A012" => &self.a012,
+            "A013" => &self.a013,
+            "A014" => &self.a014,
+            "A015" => &self.a015,
+            "A016" => &self.a016,
+            "A017" => &self.a017,
+            "A018" => &self.a018,
+            "A019" => &self.a019,
+            "A020" => &self.a020,
+            "A021" => &self.a021,
+            "A022" => &self.a022,
+            "A023" => &self.a023,
+            "A024" => &self.a024,
+            "A025" => &self.a025,
+            "A026" => &self.a026,
+            "C001" => &self.c001,
+            "C002" => &self.c002,
+            "C003" => &self.c003,
+            "C004" => &self.c004,
+            "C005" => &self.c005,
+            "C006" => &self.c006,
+            "C007" => &self.c007,
+            "C008" => &self.c008,
+            "D001" => &self.d001,
+            "D002" => &self.d002,
+            "D003" => &self.d003,
+            "D004" => &self.d004,
+            "D005" => &self.d005,
+            "D006" => &self.d006,
+            "D007" => &self.d007,
+            "D008" => &self.d008,
+            "D009" => &self.d009,
+            "D010" => &self.d010,
+            "D011" => &self.d011,
+            "D012" => &self.d012,
+            "D013" => &self.d013,
+            "M001" => &self.m001,
+            "M002" => &self.m002,
+            "M003" => &self.m003,
+            "M004" => &self.m004,
+            "M005" => &self.m005,
+            "M006" => &self.m006,
+            "M007" => &self.m007,
+            "M008" => &self.m008,
+            "M009" => &self.m009,
+            "M010" => &self.m010,
+            _ => &self.bland,
+        }
+    }
+}
+
 #[derive(AssetCollection)]
 pub struct HexImageAssets {
     #[asset(path = "textures/bland.png")]
