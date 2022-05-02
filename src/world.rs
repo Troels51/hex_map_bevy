@@ -9,7 +9,7 @@ use bevy_mod_picking::*;
 use hex2d::{self, Coordinate, Spacing, Spin};
 use rand::prelude::IteratorRandom;
 
-use crate::board::{Hex, Board};
+use crate::board::{Board, Hex};
 use crate::loading::hexes::{HexAssets, HexImageAssets};
 use crate::{loading, GameState};
 
@@ -37,11 +37,10 @@ impl Plugin for WorldPlugin {
 }
 
 //Constants
-const SPACING: Spacing = Spacing::PointyTop(1.05f32);
+const SPACING: Spacing = Spacing::PointyTop(1.00f32);
 
 const BOARD_SIZE: i32 = 5;
 const BSIZE: usize = 20;
-
 
 #[derive(Debug, Clone, Copy, Component)]
 pub enum CellType {
@@ -64,10 +63,7 @@ fn setup(
     hex_desc_assets: Res<Assets<Hex>>,
     mut board: ResMut<Board>,
 ) {
-    
     for (handle, hex) in hex_desc_assets.iter() {
-        dbg!(&hex.sides);
-        dbg!(&hex.name);
         board.add_possible_hex(hex);
     }
     commands.insert_resource(AmbientLight {
@@ -86,6 +82,9 @@ fn setup(
     });
     commands.spawn_bundle(UiCameraBundle::default());
 
+    let center = Coordinate::new(5, 5);
+    let center_pixel = center.to_pixel(SPACING);
+
     //Spawn camera
     commands
         .spawn_bundle(CameraRigBundle::default())
@@ -96,27 +95,29 @@ fn setup(
                     fov: 0.3,
                     ..Default::default()
                 },
-                transform: Transform::from_translation(Vec3::new(-30.0, 30., 0.0))
-                    .looking_at(Vec3::ZERO, Vec3::Y),
+                transform: Transform::from_translation(Vec3::new(-30.0, 30., -0.0))
+                    .looking_at(Vec3::new(center_pixel.0, 0.0, center_pixel.1), Vec3::Y),
                 ..Default::default()
             })
             .insert_bundle(PickingCameraBundle::default());
         });
 
     // spawn the game board
-    let center = Coordinate::new(5, 5);
     for ring_radius in 0..BOARD_SIZE {
         let ring = center.ring_iter(ring_radius, Spin::CCW(hex2d::Direction::XY));
         for cell_coord in ring {
             let pixel = cell_coord.to_pixel(SPACING);
-            
+
             let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord);
             if let Some(hex) = posibility_space.iter().choose(&mut rand::thread_rng()) {
                 board.set(cell_coord, hex.clone());
                 let model = hex_model_assets.get(hex.name.as_str());
                 let mut transform = Transform::from_xyz(pixel.0, 0 as f32, pixel.1);
-                transform.rotate(Quat::from_axis_angle(Vec3::Y, hex.rotation as f32 * -std::f32::consts::PI/3.0));
-    
+                transform.rotate(Quat::from_axis_angle(
+                    Vec3::Y,
+                    hex.rotation as f32 * -std::f32::consts::PI / 3.0,
+                ));
+
                 commands
                     .spawn_bundle((
                         transform,
@@ -129,7 +130,6 @@ fn setup(
                         scene_instance.0.push(instance_id);
                     });
             }
-
         }
     }
 }

@@ -1,6 +1,6 @@
 use bevy::{
     prelude::{Component, ParamSet},
-    reflect::{TypeUuid},
+    reflect::TypeUuid,
 };
 use hex2d::{Angle, Coordinate, Direction};
 use serde::{Deserialize, Serialize};
@@ -30,11 +30,10 @@ impl PartialEq for Side {
         match (self, other) {
             (_, Side::Any) => true,
             (Side::Any, _) => true,
-            _ => core::mem::discriminant(self) == core::mem::discriminant(other)
+            _ => core::mem::discriminant(self) == core::mem::discriminant(other),
         }
     }
 }
-
 
 /// If we save the possiblity space for each coordinate
 /// It would be nr_hexes * 6 * boardsize = 100 * 6 * 100 = 60000
@@ -47,10 +46,10 @@ type HexSides = [Side; HEX_SIDES];
 fn match_sides(side1: &HexSides, side2: &HexSides) -> bool {
     //There is probably a better way to do this :(
     // We concat side1 with itself, and check if side2 is contained in it
-    let v: Vec<Side> =  side1.iter().chain(side1.iter()).cloned().collect();
+    let v: Vec<Side> = side1.iter().chain(side1.iter()).cloned().collect();
     for seq in v.windows(6) {
         if seq.eq(side2) {
-            return true
+            return true;
         }
     }
     false
@@ -84,11 +83,14 @@ impl Hex {
             }
             sides.rotate_right(1);
         }
-        rotations.iter().map(|rotation:&u8| {
-            let mut a = self.clone();
-            a.rotation = *rotation;
-            a
-        }).collect()
+        rotations
+            .iter()
+            .map(|rotation: &u8| {
+                let mut a = self.clone();
+                a.rotation = *rotation;
+                a
+            })
+            .collect()
     }
 }
 
@@ -120,12 +122,14 @@ impl Board {
     //TODO: Not sure if works
     pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<Hex> {
         if let Some(hex) = self.get(coordinate) {
-            return self.get_possible_matching_hexes(&hex.sides).iter().
-                map(|h|h.get_matching_rotations(&hex.sides)
-            ).flatten().collect();
+            return self
+                .get_possible_matching_hexes(&hex.sides)
+                .iter()
+                .map(|h| h.get_matching_rotations(&hex.sides))
+                .flatten()
+                .collect();
         }
         Vec::new()
-
     }
     /// Get possible hexes that match the side description
     /// they are not prerotated, so if a hex matches, you need to rotate it in place afterwards
@@ -211,55 +215,118 @@ fn set_rotated_hex_test() {
 #[test]
 fn match_hex_side_test() {
     //These 2 should match by rotating 1
-    let a = [Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean];
-    let b = [Side::Ocean, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean];
-    assert!(match_sides(&a,&b));
+    let a = [
+        Side::Grass,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+    ];
+    let b = [
+        Side::Ocean,
+        Side::Grass,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+    ];
+    assert!(match_sides(&a, &b));
 
     //These 2 should not match
-    let a = [Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean];
-    let b = [Side::Ocean, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean, Side::Ocean];
-    assert!(!match_sides(&a,&b));
+    let a = [
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+    ];
+    let b = [
+        Side::Ocean,
+        Side::Grass,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+    ];
+    assert!(!match_sides(&a, &b));
 
     //Any should match everything
-    let a = [Side::Any, Side::Any, Side::Any, Side::Any, Side::Any, Side::Any];
-    let b = [Side::Ocean, Side::Grass, Side::Hills, Side::Road, Side::Desert, Side::Mountain];
-    assert!(match_sides(&a,&b));
+    let a = [
+        Side::Any,
+        Side::Any,
+        Side::Any,
+        Side::Any,
+        Side::Any,
+        Side::Any,
+    ];
+    let b = [
+        Side::Ocean,
+        Side::Grass,
+        Side::Hills,
+        Side::Road,
+        Side::Desert,
+        Side::Mountain,
+    ];
+    assert!(match_sides(&a, &b));
 }
 
 #[test]
 fn possibility_test() {
-    let mut b = Board::new(3,3);
+    let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
-        sides: [Side::Grass, Side::Grass, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean],
+        sides: [
+            Side::Grass,
+            Side::Grass,
+            Side::Grass,
+            Side::Ocean,
+            Side::Ocean,
+            Side::Ocean,
+        ],
         rotation: 0,
     };
     b.add_possible_hex(&h1);
 
-    let center = Coordinate::new(1,1);
+    let center = Coordinate::new(1, 1);
     b.set(center, h1);
     assert_eq!(b.get(center + YZ).unwrap().sides[4], Side::Grass);
     //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
     let possible = b.get_possible_hexes_for_coordinate(center + YZ);
     let rotations: Vec<u8> = possible.iter().map(|x| x.rotation).collect();
-    assert_eq!(rotations, vec![1,2,3]);
+    assert_eq!(rotations, vec![1, 2, 3]);
 }
 
 #[test]
 fn possible_matching_test() {
-    let mut b = Board::new(3,3);
+    let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
-        sides: [Side::Grass, Side::Grass, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean],
+        sides: [
+            Side::Grass,
+            Side::Grass,
+            Side::Grass,
+            Side::Ocean,
+            Side::Ocean,
+            Side::Ocean,
+        ],
         rotation: 0,
     };
     b.add_possible_hex(&h1);
 
-    let center = Coordinate::new(1,1);
+    let center = Coordinate::new(1, 1);
     b.set(center, h1.clone());
     assert_eq!(b.get(center + YZ).unwrap().sides[4], Side::Grass);
     //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
-    let possible = b.get_possible_matching_hexes(&[Side::Grass, Side::Grass, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean]);
+    let possible = b.get_possible_matching_hexes(&[
+        Side::Grass,
+        Side::Grass,
+        Side::Grass,
+        Side::Ocean,
+        Side::Ocean,
+        Side::Ocean,
+    ]);
     assert_eq!(possible[0], &h1);
 }
 
@@ -267,11 +334,25 @@ fn possible_matching_test() {
 fn matching_rotations_test() {
     let h1 = Hex {
         name: String::from("A001"),
-        sides: [Side::Grass, Side::Grass, Side::Grass, Side::Ocean, Side::Ocean, Side::Ocean],
+        sides: [
+            Side::Grass,
+            Side::Grass,
+            Side::Grass,
+            Side::Ocean,
+            Side::Ocean,
+            Side::Ocean,
+        ],
         rotation: 0,
     };
-    let rotations = h1.get_matching_rotations(&[Side::Any, Side::Any, Side::Any, Side::Grass, Side::Any, Side::Any]);
+    let rotations = h1.get_matching_rotations(&[
+        Side::Any,
+        Side::Any,
+        Side::Any,
+        Side::Grass,
+        Side::Any,
+        Side::Any,
+    ]);
     let rotations: Vec<u8> = rotations.iter().map(|x| x.rotation).collect();
-    assert_eq!(rotations, vec![1,2,3]);
+    assert_eq!(rotations, vec![1, 2, 3]);
     assert!(false);
 }

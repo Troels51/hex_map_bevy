@@ -14,6 +14,7 @@ use bevy::{ecs::schedule::SystemSet, prelude::*};
 use bevy_4x_camera::{CameraRigBundle, FourXCameraPlugin};
 use bevy_asset_loader::AssetLoader;
 use bevy_asset_ron::RonAssetPlugin;
+use bevy_editor_pls::EditorPlugin;
 use bevy_mod_picking::*;
 use bevy_mod_picking::{DebugCursorPickingPlugin, InteractablePickingPlugin};
 use hex2d::{self, Coordinate, Spacing, Spin};
@@ -40,8 +41,9 @@ impl Plugin for GamePlugin {
             .add_plugin(WorldPlugin);
         #[cfg(debug_assertions)]
         {
-            //app.add_plugin(FrameTimeDiagnosticsPlugin::default())
-            //    .add_plugin(LogDiagnosticsPlugin::default());
+            app.add_plugin(FrameTimeDiagnosticsPlugin::default())
+                .add_plugin(LogDiagnosticsPlugin::default());
+            //.add_plugin(EditorPlugin);
         }
     }
 }

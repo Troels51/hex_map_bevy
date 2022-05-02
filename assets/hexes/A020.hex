@@ -1,0 +1,5 @@
+(
+  name: "A020",
+  sides: (Ocean, Ocean, Ocean, Ocean, Ocean, Ocean),
+  rotation: 0,
+)
