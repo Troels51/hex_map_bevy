@@ -5,8 +5,8 @@ use bevy_asset_loader::AssetCollection;
 
 #[derive(AssetCollection)]
 pub struct HexAssets {
-    #[asset(path = "models/bland_hex.glb#Scene0")]
-    pub bland: Handle<Scene>,
+    #[asset(path = "models/blank.glb#Scene0")]
+    pub blank: Handle<Scene>,
     #[asset(path = "models/generated/A001.glb#Scene0")]
     pub a001: Handle<Scene>,
     #[asset(path = "models/generated/A002.glb#Scene0")]
@@ -129,7 +129,7 @@ impl Index<usize> for HexAssets {
 
     fn index(&self, index: usize) -> &Self::Output {
         match index {
-            0 => &self.bland,
+            0 => &self.blank,
             1 => &self.a001,
             2 => &self.a002,
             3 => &self.a003,
@@ -195,7 +195,7 @@ impl Index<usize> for HexAssets {
 impl HexAssets {
     pub fn get(&self, key: &str) -> &Handle<Scene> {
         match key {
-            "bland" => &self.bland,
+            "blank" => &self.blank,
             "A001" => &self.a001,
             "A002" => &self.a002,
             "A003" => &self.a003,
@@ -253,15 +253,15 @@ impl HexAssets {
             "M008" => &self.m008,
             "M009" => &self.m009,
             "M010" => &self.m010,
-            _ => &self.bland,
+            _ => &self.blank,
         }
     }
 }
 
 #[derive(AssetCollection)]
 pub struct HexImageAssets {
-    #[asset(path = "textures/bland.png")]
-    pub bland: Handle<Image>,
+    #[asset(path = "textures/blank.png")]
+    pub blank: Handle<Image>,
     #[asset(path = "textures/A001_F.png")]
     pub a001: Handle<Image>,
     #[asset(path = "textures/A002_F.png")]
@@ -383,7 +383,7 @@ impl Index<usize> for HexImageAssets {
 
     fn index(&self, index: usize) -> &Self::Output {
         match index {
-            0 => &self.bland,
+            0 => &self.blank,
             1 => &self.a001,
             2 => &self.a002,
             3 => &self.a003,

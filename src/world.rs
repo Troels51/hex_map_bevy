@@ -19,19 +19,12 @@ pub struct WorldPlugin;
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SceneInstance::default())
-            .insert_resource(ChoosenHex(1))
             .insert_resource(Board::new(BSIZE, BSIZE))
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui))
             .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
             .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(scene_update))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(click_events))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(rotate_hex))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(choose_hex))
-            .add_system_set(
-                SystemSet::on_update(GameState::Playing).with_system(update_chosen_hex_ui),
-            );
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(rotate_hex));
     }
 }
 
@@ -44,10 +37,8 @@ const BSIZE: usize = 20;
 #[derive(Debug, Clone, Copy, Component)]
 pub struct CellCoord(hex2d::Coordinate);
 
-struct ChoosenHex(usize);
 
-#[derive(Component)]
-struct HexChooserUI;
+
 
 fn setup(
     mut commands: Commands,
@@ -128,111 +119,6 @@ fn setup(
     }
 }
 
-fn setup_ui(
-    mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
-    hex_image_assets: Res<HexImageAssets>,
-) {
-    // ui camera
-    commands.spawn_bundle(UiCameraBundle::default());
-
-    // root node
-    commands
-        .spawn_bundle(NodeBundle {
-            style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                justify_content: JustifyContent::SpaceBetween,
-                ..Default::default()
-            },
-            color: Color::NONE.into(),
-            ..Default::default()
-        })
-        .with_children(|parent| {
-            // left vertical fill (border)
-            parent
-                .spawn_bundle(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                        border: Rect::all(Val::Px(2.0)),
-                        ..Default::default()
-                    },
-                    color: Color::rgb(0.65, 0.65, 0.65).into(),
-                    ..Default::default()
-                })
-                .with_children(|parent| {
-                    // left vertical fill (content)
-                    parent
-                        .spawn_bundle(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                                align_items: AlignItems::FlexEnd,
-                                ..Default::default()
-                            },
-                            color: Color::rgb(0.15, 0.15, 0.15).into(),
-                            ..Default::default()
-                        })
-                        .with_children(|parent| {
-                            // text
-                            parent.spawn_bundle(TextBundle {
-                                style: Style {
-                                    margin: Rect::all(Val::Px(5.0)),
-                                    ..Default::default()
-                                },
-                                text: Text::with_section(
-                                    "",
-                                    TextStyle {
-                                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                                        font_size: 30.0,
-                                        color: Color::WHITE,
-                                    },
-                                    Default::default(),
-                                ),
-                                ..Default::default()
-                            });
-                        });
-                });
-            // right vertical fill
-            parent.spawn_bundle(NodeBundle {
-                style: Style {
-                    flex_direction: FlexDirection::ColumnReverse,
-                    justify_content: JustifyContent::Center,
-                    size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                    ..Default::default()
-                },
-                color: Color::rgb(0.15, 0.15, 0.15).into(),
-                ..Default::default()
-            });
-            // absolute positioning
-            parent
-                .spawn_bundle(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Px(350.0), Val::Px(350.0)),
-                        position_type: PositionType::Absolute,
-                        position: Rect {
-                            left: Val::Px(210.0),
-                            bottom: Val::Px(10.0),
-                            ..Default::default()
-                        },
-                        border: Rect::all(Val::Px(20.0)),
-                        ..Default::default()
-                    },
-                    color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
-                    ..Default::default()
-                })
-                .with_children(|parent| {
-                    parent
-                        .spawn_bundle(ImageBundle {
-                            style: Style {
-                                size: Size::new(Val::Px(500.0), Val::Auto),
-                                ..Default::default()
-                            },
-                            image: hex_image_assets.bland.clone().into(),
-                            ..Default::default()
-                        })
-                        .insert(HexChooserUI);
-                });
-        });
-}
 
 // Resource to hold the scene `instance_id` until it is loaded
 #[derive(Default)]
@@ -262,35 +148,6 @@ fn scene_update(
     }
 }
 
-fn click_events(
-    mut events: EventReader<PickingEvent>,
-    transfrom_query: Query<&Transform>,
-    cellcord_query: Query<&CellCoord>,
-    parent_query: Query<&Parent>,
-    mut scene_spawner: ResMut<SceneSpawner>,
-    mut scene_instance: ResMut<SceneInstance>,
-    mut commands: Commands,
-    hex_assets: Res<HexAssets>,
-    chosen_hex: Res<ChoosenHex>,
-) {
-    for event in events.iter() {
-        if let PickingEvent::Clicked(tile) = event {
-            let parent = get_top_parent(&parent_query, tile);
-            let cellcoord: &CellCoord = cellcord_query.get_component(parent.0).unwrap();
-            let position: &Transform = transfrom_query.get_component(parent.0).unwrap();
-            commands
-                .spawn_bundle((*position, GlobalTransform::identity(), *cellcoord))
-                .with_children(|parent_1| {
-                    let instance_id = scene_spawner.spawn_as_child(
-                        hex_assets.index(chosen_hex.0).clone(),
-                        parent_1.parent_entity(),
-                    );
-                    scene_instance.0.push(instance_id);
-                });
-            commands.entity(parent.0).despawn_recursive();
-        }
-    }
-}
 
 fn rotate_hex(
     keys: Res<Input<KeyCode>>,
@@ -306,21 +163,8 @@ fn rotate_hex(
         }
     }
 }
-fn choose_hex(keys: Res<Input<KeyCode>>, mut chosen_hex: ResMut<ChoosenHex>) {
-    if keys.just_pressed(KeyCode::F) {
-        chosen_hex.0 = (chosen_hex.0 + 1) % 58;
-    }
-}
 
-fn update_chosen_hex_ui(
-    mut ui: Query<&mut UiImage, With<HexChooserUI>>,
-    chosen_hex: ResMut<ChoosenHex>,
-    hex_assets: Res<HexImageAssets>,
-) {
-    if chosen_hex.is_changed() {
-        ui.single_mut().0 = hex_assets[chosen_hex.0].clone();
-    }
-}
+
 
 fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entity) -> &'a Parent {
     let parent = parent_query.get(*child).unwrap();

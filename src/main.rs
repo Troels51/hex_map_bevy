@@ -7,7 +7,7 @@ fn main() {
         .insert_resource(Msaa { samples: 4 })
         .insert_resource(WindowDescriptor {
             title: "Map of hexes".to_string(),
-            width: 3000.,
+            width: 1920.,
             height: 1200.,
             ..Default::default()
         })

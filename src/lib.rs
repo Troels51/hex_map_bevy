@@ -1,7 +1,7 @@
 mod board;
 mod loading;
 mod world;
-
+mod ui;
 use crate::loading::LoadingPlugin;
 
 use bevy::app::App;
@@ -13,6 +13,7 @@ use bevy_4x_camera::FourXCameraPlugin;
 
 use bevy_mod_picking::*;
 use bevy_mod_picking::{DebugCursorPickingPlugin, InteractablePickingPlugin};
+use ui::UIPlugin;
 use world::WorldPlugin;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -33,7 +34,8 @@ impl Plugin for GamePlugin {
             .add_plugin(DebugCursorPickingPlugin)
             .add_plugin(DebugCursorPickingPlugin)
             .add_plugin(FourXCameraPlugin)
-            .add_plugin(WorldPlugin);
+            .add_plugin(WorldPlugin)
+            .add_plugin(UIPlugin);
         #[cfg(debug_assertions)]
         {
             app.add_plugin(FrameTimeDiagnosticsPlugin::default())
