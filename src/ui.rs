@@ -1,6 +1,6 @@
 use bevy::{prelude::{Plugin, App, SystemSet, Commands, ResMut, AssetServer, UiCameraBundle, Res, NodeBundle, Color, TextBundle, ImageBundle, Query, With, Component, DetectChanges}, ui::{Style, Val, JustifyContent, AlignItems, FlexDirection, PositionType, UiImage}, math::{Size, Rect}, hierarchy::BuildChildren, text::{Text, TextStyle}};
 
-use crate::{GameState, loading::hexes::HexImageAssets};
+use crate::{GameState, loading::hex_models::HexImageAssets};
 
 pub struct UIPlugin;
 
