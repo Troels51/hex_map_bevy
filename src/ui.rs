@@ -2,11 +2,11 @@ use bevy::{
     hierarchy::BuildChildren,
     math::{Rect, Size},
     prelude::{
-        App, AssetServer, Color, Commands, Component, DetectChanges, ImageBundle, NodeBundle,
-        Plugin, Query, Res, ResMut, SystemSet, TextBundle, UiCameraBundle, With,
+        App, AssetServer, Color, Commands, Component, NodeBundle,
+        Plugin, Res, ResMut, SystemSet, TextBundle, UiCameraBundle,
     },
     text::{Text, TextStyle},
-    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Style, UiImage, Val},
+    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Style, Val},
 };
 
 use crate::{loading::hex_models::HexImageAssets, GameState};
@@ -27,7 +27,7 @@ struct HexChooserUI;
 fn setup_ui(
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,
-    hex_image_assets: Res<HexImageAssets>,
+    _hex_image_assets: Res<HexImageAssets>,
 ) {
     // ui camera
     commands.spawn_bundle(UiCameraBundle::default());
