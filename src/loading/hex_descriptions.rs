@@ -134,4 +134,3 @@ pub struct HexDescriptions {
     pub m010: Handle<Hex>,
     */
 }
-

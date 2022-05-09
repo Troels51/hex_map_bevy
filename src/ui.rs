@@ -1,6 +1,15 @@
-use bevy::{prelude::{Plugin, App, SystemSet, Commands, ResMut, AssetServer, UiCameraBundle, Res, NodeBundle, Color, TextBundle, ImageBundle, Query, With, Component, DetectChanges}, ui::{Style, Val, JustifyContent, AlignItems, FlexDirection, PositionType, UiImage}, math::{Size, Rect}, hierarchy::BuildChildren, text::{Text, TextStyle}};
+use bevy::{
+    hierarchy::BuildChildren,
+    math::{Rect, Size},
+    prelude::{
+        App, AssetServer, Color, Commands, Component, DetectChanges, ImageBundle, NodeBundle,
+        Plugin, Query, Res, ResMut, SystemSet, TextBundle, UiCameraBundle, With,
+    },
+    text::{Text, TextStyle},
+    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Style, UiImage, Val},
+};
 
-use crate::{GameState, loading::hex_models::HexImageAssets};
+use crate::{loading::hex_models::HexImageAssets, GameState};
 
 pub struct UIPlugin;
 
@@ -8,15 +17,12 @@ pub struct UIPlugin;
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui));
+        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui));
     }
 }
 
-
 #[derive(Component)]
 struct HexChooserUI;
-
 
 fn setup_ui(
     mut commands: Commands,
@@ -93,21 +99,20 @@ fn setup_ui(
                 ..Default::default()
             });
             // absolute positioning
-            parent
-                .spawn_bundle(NodeBundle {
-                    style: Style {
-                        size: Size::new(Val::Px(350.0), Val::Px(350.0)),
-                        position_type: PositionType::Absolute,
-                        position: Rect {
-                            left: Val::Px(210.0),
-                            bottom: Val::Px(10.0),
-                            ..Default::default()
-                        },
-                        border: Rect::all(Val::Px(20.0)),
+            parent.spawn_bundle(NodeBundle {
+                style: Style {
+                    size: Size::new(Val::Px(350.0), Val::Px(350.0)),
+                    position_type: PositionType::Absolute,
+                    position: Rect {
+                        left: Val::Px(210.0),
+                        bottom: Val::Px(10.0),
                         ..Default::default()
                     },
-                    color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+                    border: Rect::all(Val::Px(20.0)),
                     ..Default::default()
-                });
+                },
+                color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+                ..Default::default()
+            });
         });
 }

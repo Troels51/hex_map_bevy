@@ -37,9 +37,6 @@ const BSIZE: usize = 20;
 #[derive(Debug, Clone, Copy, Component)]
 pub struct CellCoord(hex2d::Coordinate);
 
-
-
-
 fn setup(
     mut commands: Commands,
     mut scene_spawner: ResMut<SceneSpawner>,
@@ -119,7 +116,6 @@ fn setup(
     }
 }
 
-
 // Resource to hold the scene `instance_id` until it is loaded
 #[derive(Default)]
 struct SceneInstance(Vec<bevy::scene::InstanceId>);
@@ -148,7 +144,6 @@ fn scene_update(
     }
 }
 
-
 fn rotate_hex(
     keys: Res<Input<KeyCode>>,
     parent_query: Query<&Parent>,
@@ -163,8 +158,6 @@ fn rotate_hex(
         }
     }
 }
-
-
 
 fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entity) -> &'a Parent {
     let parent = parent_query.get(*child).unwrap();

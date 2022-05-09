@@ -1,7 +1,7 @@
 mod board;
 mod loading;
-mod world;
 mod ui;
+mod world;
 use crate::loading::LoadingPlugin;
 
 use bevy::app::App;
