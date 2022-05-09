@@ -1,0 +1,5 @@
+(
+  name: "blank",
+  sides: (Any, Any, Any, Any, Any, Any),
+  rotation: 0,
+)
