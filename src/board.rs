@@ -147,6 +147,11 @@ impl Board {
         let rotations = possible.get_matching_rotations(&hex.sides);
         Some(rotations.get(0).unwrap().clone())
     }
+    pub fn reset(&mut self) {
+        for i in self.hexes.iter_mut().flatten() {
+            *i = Hex::default();
+        }
+    }
 }
 
 #[test]

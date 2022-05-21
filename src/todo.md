@@ -1,7 +1,8 @@
 TODO:
 Better camera system and input handling
 
-Key for generating a map
+Use the new textures
+
 Save a map
 Load a map
 2d version, for easy printing of a game board?

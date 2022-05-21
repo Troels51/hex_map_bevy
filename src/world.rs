@@ -24,15 +24,18 @@ impl Plugin for WorldPlugin {
             .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
             .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(scene_update))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(rotate_hex));
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(spawn_board_on_press));
     }
 }
 
 //Constants
 const SPACING: Spacing = Spacing::PointyTop(1.00f32);
 
-const BOARD_SIZE: i32 = 5;
-const BSIZE: usize = 20;
+const BOARD_SIZE: i32 = 6;
+const BSIZE: usize = 100;
+
+#[derive(Component)]
+struct HexTag;
 
 #[derive(Debug, Clone, Copy, Component)]
 pub struct CellCoord(hex2d::Coordinate);
@@ -64,7 +67,7 @@ fn setup(
     });
     commands.spawn_bundle(UiCameraBundle::default());
 
-    let center = Coordinate::new(5, 5);
+    let center = Coordinate::new(10, 10);
     let center_pixel = center.to_pixel(SPACING);
 
     //Spawn camera
@@ -84,6 +87,18 @@ fn setup(
             .insert_bundle(PickingCameraBundle::default());
         });
 
+    spawn_board(center, board, hex_model_assets, commands, scene_spawner, scene_instance);
+}
+
+fn spawn_board(
+    center: Coordinate,
+    mut board: ResMut<Board>,
+    hex_model_assets: Res<HexAssets>,
+    mut commands: Commands,
+    mut scene_spawner: ResMut<SceneSpawner>,
+    mut scene_instance: ResMut<SceneInstance>,
+
+) {
     // spawn the game board
     for ring_radius in 0..BOARD_SIZE {
         let ring = center.ring_iter(ring_radius, Spin::CCW(hex2d::Direction::XY));
@@ -104,6 +119,7 @@ fn setup(
                     .spawn_bundle((
                         transform,
                         GlobalTransform::identity(),
+                        HexTag,
                         CellCoord(cell_coord),
                     ))
                     .with_children(|parent| {
@@ -144,20 +160,27 @@ fn scene_update(
     }
 }
 
-fn rotate_hex(
+fn spawn_board_on_press(
     keys: Res<Input<KeyCode>>,
-    parent_query: Query<&Parent>,
-    hover_query: Query<(Entity, &Hover)>,
-    mut transform: Query<&mut Transform>,
+    mut board: ResMut<Board>,
+    hex_model_assets: Res<HexAssets>,
+    mut hex_entities: Query<Entity, With<HexTag>>,
+    mut commands: Commands,
+    mut scene_spawner: ResMut<SceneSpawner>,
+    mut scene_instance: ResMut<SceneInstance>,
 ) {
-    if keys.just_pressed(KeyCode::R) {
-        if let Some(child) = hover_query.iter().find(|(_, h)| h.hovered()) {
-            let parent = get_top_parent(&parent_query, &child.0);
-            let mut trans = transform.get_mut(parent.0).unwrap();
-            trans.rotate(Quat::from_axis_angle(Vec3::Y, -std::f32::consts::PI / 3.0))
+    if keys.just_pressed(KeyCode::X) {
+        //trigger despawn of board
+        for entity in hex_entities.iter() {
+            commands.entity(entity).despawn_recursive();
         }
+        board.reset();
+        //then trigger spawn of board
+        let center = Coordinate::new(10, 10);
+        spawn_board(center, board, hex_model_assets, commands, scene_spawner, scene_instance);
     }
 }
+
 
 fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entity) -> &'a Parent {
     let parent = parent_query.get(*child).unwrap();
