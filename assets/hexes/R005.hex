@@ -1,0 +1,5 @@
+(
+  name: "R005",
+  sides: (Road, Road, Grass, Road, Road, Grass),
+  rotation: 0,
+)

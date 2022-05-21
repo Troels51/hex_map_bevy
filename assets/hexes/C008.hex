@@ -1,0 +1,5 @@
+(
+  name: "C008",
+  sides: (Grass, Ocean, Ocean, Ocean, Ocean, Road),
+  rotation: 0,
+)

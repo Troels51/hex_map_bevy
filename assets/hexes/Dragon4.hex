@@ -1,0 +1,5 @@
+(
+  name: "Dragon4",
+  sides: (Grass, Ocean, Ocean, Ocean, Grass, Grass),
+  rotation: 0,
+)
