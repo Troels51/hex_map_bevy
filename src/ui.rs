@@ -2,8 +2,8 @@ use bevy::{
     hierarchy::BuildChildren,
     math::{Rect, Size},
     prelude::{
-        App, AssetServer, Color, Commands, Component, NodeBundle,
-        Plugin, Res, ResMut, SystemSet, TextBundle, UiCameraBundle,
+        App, AssetServer, Color, Commands, Component, NodeBundle, Plugin, Res, ResMut, SystemSet,
+        TextBundle, UiCameraBundle,
     },
     text::{Text, TextStyle},
     ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Style, Val},

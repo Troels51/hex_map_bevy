@@ -1,5 +1,3 @@
-
-
 use bevy::app::App;
 use bevy::render::camera::{Camera, PerspectiveProjection};
 use bevy::{ecs::schedule::SystemSet, prelude::*};
@@ -9,7 +7,7 @@ use hex2d::{self, Coordinate, Spacing, Spin};
 use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
-use crate::loading::hex_models::{HexAssets};
+use crate::loading::hex_models::HexAssets;
 use crate::GameState;
 
 pub struct WorldPlugin;
@@ -24,7 +22,9 @@ impl Plugin for WorldPlugin {
             .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
             .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(scene_update))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(spawn_board_on_press));
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(spawn_board_on_press),
+            );
     }
 }
 
@@ -87,7 +87,14 @@ fn setup(
             .insert_bundle(PickingCameraBundle::default());
         });
 
-    spawn_board(center, board, hex_model_assets, commands, scene_spawner, scene_instance);
+    spawn_board(
+        center,
+        board,
+        hex_model_assets,
+        commands,
+        scene_spawner,
+        scene_instance,
+    );
 }
 
 fn spawn_board(
@@ -97,7 +104,6 @@ fn spawn_board(
     mut commands: Commands,
     mut scene_spawner: ResMut<SceneSpawner>,
     mut scene_instance: ResMut<SceneInstance>,
-
 ) {
     // spawn the game board
     for ring_radius in 0..BOARD_SIZE {
@@ -177,10 +183,16 @@ fn spawn_board_on_press(
         board.reset();
         //then trigger spawn of board
         let center = Coordinate::new(10, 10);
-        spawn_board(center, board, hex_model_assets, commands, scene_spawner, scene_instance);
+        spawn_board(
+            center,
+            board,
+            hex_model_assets,
+            commands,
+            scene_spawner,
+            scene_instance,
+        );
     }
 }
-
 
 fn get_top_parent<'a>(parent_query: &'a Query<'a, 'a, &Parent>, child: &'a Entity) -> &'a Parent {
     let parent = parent_query.get(*child).unwrap();
