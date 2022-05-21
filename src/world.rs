@@ -42,8 +42,8 @@ pub struct CellCoord(hex2d::Coordinate);
 
 fn setup(
     mut commands: Commands,
-    mut scene_spawner: ResMut<SceneSpawner>,
-    mut scene_instance: ResMut<SceneInstance>,
+    scene_spawner: ResMut<SceneSpawner>,
+    scene_instance: ResMut<SceneInstance>,
     hex_model_assets: Res<HexAssets>,
     hex_desc_assets: Res<Assets<Hex>>,
     mut board: ResMut<Board>,
@@ -170,10 +170,10 @@ fn spawn_board_on_press(
     keys: Res<Input<KeyCode>>,
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexAssets>,
-    mut hex_entities: Query<Entity, With<HexTag>>,
+    hex_entities: Query<Entity, With<HexTag>>,
     mut commands: Commands,
-    mut scene_spawner: ResMut<SceneSpawner>,
-    mut scene_instance: ResMut<SceneInstance>,
+    scene_spawner: ResMut<SceneSpawner>,
+    scene_instance: ResMut<SceneInstance>,
 ) {
     if keys.just_pressed(KeyCode::X) {
         //trigger despawn of board
