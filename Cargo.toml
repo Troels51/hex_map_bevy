@@ -40,9 +40,8 @@ serde = "1.0"
 rand = "0.8.3"
 hex2d = "1.1.0"
 bevy_asset_ron = "0.4"
-
-[dev-dependencies]
 bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls.git", branch = "main"}
+
 
 [target.'cfg(target_os = "linux")'.dependencies]
 winit = { version = "0.25", features=["x11"]}

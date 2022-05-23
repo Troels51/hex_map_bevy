@@ -1,4 +1,9 @@
-use bevy::{prelude::Component, reflect::TypeUuid};
+
+
+use bevy::{
+    prelude::Component,
+    reflect::{TypeUuid},
+};
 use hex2d::Angle;
 use serde::{Deserialize, Serialize};
 
@@ -51,7 +56,7 @@ fn match_sides(side1: &HexSides, side2: &HexSides) -> bool {
     false
 }
 
-#[derive(Serialize, Deserialize, TypeUuid, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, TypeUuid, Debug, Clone, PartialEq, Component)]
 #[uuid = "64271346-f11a-4736-ae17-6876acf29761"]
 pub struct Hex {
     pub sides: HexSides,
@@ -178,13 +183,31 @@ fn set_hex_test() {
     };
     let center = Coordinate::new(1, 1);
     b.set(center, hex);
-    //We check each of the neighbours to see if the correct place has been set
-    assert_eq!(b.get(center + YZ).unwrap().sides[3], Side::Grass);
-    assert_eq!(b.get(center + XZ).unwrap().sides[4], Side::Ocean);
-    assert_eq!(b.get(center + XY).unwrap().sides[5], Side::Ocean);
-    assert_eq!(b.get(center + ZY).unwrap().sides[0], Side::Ocean);
-    assert_eq!(b.get(center + ZX).unwrap().sides[1], Side::Ocean);
-    assert_eq!(b.get(center + YX).unwrap().sides[2], Side::Ocean);
+    //We check each of the neighbours to see if the correct place has been set, with memcmp because ANY matches everything
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YZ).unwrap().sides[3]),
+        core::mem::discriminant(&Side::Grass)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + XZ).unwrap().sides[4]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + XY).unwrap().sides[5]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + ZY).unwrap().sides[0]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + ZX).unwrap().sides[1]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YX).unwrap().sides[2]),
+        core::mem::discriminant(&Side::Ocean)
+    );
 }
 
 #[test]
@@ -205,13 +228,31 @@ fn set_rotated_hex_test() {
     };
     let center = Coordinate::new(1, 1);
     b.set(center, hex);
-    //We check each of the neighbours to see if the correct place has been set
-    assert_eq!(b.get(center + XZ).unwrap().sides[4], Side::Grass);
-    assert_eq!(b.get(center + XY).unwrap().sides[5], Side::Ocean);
-    assert_eq!(b.get(center + ZY).unwrap().sides[0], Side::Ocean);
-    assert_eq!(b.get(center + ZX).unwrap().sides[1], Side::Ocean);
-    assert_eq!(b.get(center + YX).unwrap().sides[2], Side::Ocean);
-    assert_eq!(b.get(center + YZ).unwrap().sides[3], Side::Ocean);
+    //We check each of the neighbours to see if the correct place has been set, done with memcmp, because ANY matches everything
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + XZ).unwrap().sides[4]),
+        core::mem::discriminant(&Side::Grass)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + XY).unwrap().sides[5]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + ZY).unwrap().sides[0]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + ZX).unwrap().sides[1]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YX).unwrap().sides[2]),
+        core::mem::discriminant(&Side::Ocean)
+    );
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YZ).unwrap().sides[3]),
+        core::mem::discriminant(&Side::Ocean)
+    );
 }
 
 #[test]
@@ -295,8 +336,12 @@ fn possibility_test() {
 
     let center = Coordinate::new(1, 1);
     b.set(center, h1);
-    assert_eq!(b.get(center + YZ).unwrap().sides[4], Side::Grass);
-    //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
+    assert_eq!(b.get(center + YZ).unwrap().sides[3], Side::Grass);
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YZ).unwrap().sides[3]),
+        core::mem::discriminant(&Side::Grass)
+    ); //Any matches everything, so we need to test the actual memory
+       //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
     let possible = b.get_possible_hexes_for_coordinate(center + YZ);
     let rotations: Vec<u8> = possible.iter().map(|x| x.rotation).collect();
     assert_eq!(rotations, vec![1, 2, 3]);
@@ -322,8 +367,12 @@ fn possible_matching_test() {
 
     let center = Coordinate::new(1, 1);
     b.set(center, h1.clone());
-    assert_eq!(b.get(center + YZ).unwrap().sides[4], Side::Grass);
-    //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
+    assert_eq!(b.get(center + YZ).unwrap().sides[3], Side::Grass);
+    assert_eq!(
+        core::mem::discriminant(&b.get(center + YZ).unwrap().sides[3]),
+        core::mem::discriminant(&Side::Grass)
+    ); //Any matches everything, so we need to test the actual memory
+       //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
     let possible = b.get_possible_matching_hexes(&[
         Side::Grass,
         Side::Grass,
