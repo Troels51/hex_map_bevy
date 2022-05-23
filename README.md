@@ -3,8 +3,11 @@
 
 This is a small 3D application with a hex map. Hex art by Andreas Barbesgaard
 
-- Press F to change to the next hex model
-- Press R to rotate the selected hex on the map
+![WebPage](https://troels51.github.io/hex_map_bevy/)
+
+Instructions:
+- Press X to auto generate a new map
+- PageUp & PageDown to Zoom
 - WASD to move the camera
 
 ![Preview](/assets/hex_map.PNG)
@@ -18,6 +21,3 @@ This is a small 3D application with a hex map. Hex art by Andreas Barbesgaard
        * requires [`wasm-server-runner`]: `cargo install wasm-server-runner`
        * requires `wasm32-unknown-unknown` target: `rustup target add wasm32-unknown-unknown`
        * this will serve your app on a free port
-
-## How to generate Hex models
-The script batch_export under models/blender_files will generate a 3D model for each hex texture. Modify and run the script in blender if you modify the hex images.
