@@ -10,7 +10,7 @@ Instructions:
 - PageUp & PageDown to Zoom
 - WASD to move the camera
 
-![Preview](/assets/hex_map.PNG)
+![Preview](/assets/preview.png)
 
 
 ## How to run
