@@ -13,7 +13,6 @@ impl Plugin for LoadingPlugin {
         app.add_plugin(RonAssetPlugin::<Hex>::new(&["hex"]));
 
         AssetLoader::new(GameState::Loading)
-            .with_collection::<hex_models::HexAssets>()
             .with_collection::<hex_models::HexImageAssets>()
             .with_collection::<hex_descriptions::HexDescriptions>()
             .continue_to_state(GameState::Playing)
