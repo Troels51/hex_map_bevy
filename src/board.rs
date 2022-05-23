@@ -1,9 +1,4 @@
-
-
-use bevy::{
-    prelude::Component,
-    reflect::{TypeUuid},
-};
+use bevy::{prelude::Component, reflect::TypeUuid};
 use hex2d::Angle;
 use serde::{Deserialize, Serialize};
 

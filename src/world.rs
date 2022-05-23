@@ -1,13 +1,12 @@
 use bevy::app::App;
-use bevy::render::camera::{Camera};
+use bevy::render::camera::Camera;
 use bevy::{ecs::schedule::SystemSet, prelude::*};
-
 
 use hex2d::{self, Coordinate, Spacing, Spin};
 use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
-use crate::loading::hex_models::{HexImageAssets};
+use crate::loading::hex_models::HexImageAssets;
 use crate::GameState;
 
 pub struct WorldPlugin;

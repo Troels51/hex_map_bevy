@@ -10,7 +10,6 @@ use bevy::prelude::*;
 
 use bevy_4x_camera::FourXCameraPlugin;
 
-
 use bevy_mod_picking::*;
 use bevy_mod_picking::{DebugCursorPickingPlugin, InteractablePickingPlugin};
 
