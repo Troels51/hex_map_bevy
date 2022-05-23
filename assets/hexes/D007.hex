@@ -1,0 +1,5 @@
+(
+  name: "D007",
+  sides: (Desert, Desert, Desert, Ocean, Ocean, Ocean),
+  rotation: 0,
+)
