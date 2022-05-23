@@ -3,7 +3,7 @@
 
 This is a small 3D application with a hex map. Hex art by Andreas Barbesgaard
 
-![WebPage](https://troels51.github.io/hex_map_bevy/)
+[WebPage](https://troels51.github.io/hex_map_bevy/)
 
 Instructions:
 - Press X to auto generate a new map
