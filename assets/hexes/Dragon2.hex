@@ -1,0 +1,5 @@
+(
+  name: "Dragon2",
+  sides: (Grass, Road, Grass, Road, Grass, Grass),
+  rotation: 0,
+)
