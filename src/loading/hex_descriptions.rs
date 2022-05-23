@@ -133,7 +133,6 @@ pub struct HexDescriptions {
     pub m009: Handle<Hex>,
     #[asset(path = "hexes/M010.hex")]
     pub m010: Handle<Hex>,
-
     // #[asset(path = "hexes/Dragon1.hex")]
     // pub dragon1: Handle<Hex>,
     // #[asset(path = "hexes/Dragon2.hex")]

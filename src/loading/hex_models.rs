@@ -126,8 +126,6 @@ pub struct HexImageAssets {
     pub m009: Handle<Image>,
     #[asset(path = "textures/M010.png")]
     pub m010: Handle<Image>,
-
-    
     // These are not part of the free package
     // #[asset(path = "textures/Dragon1.png")]
     // pub dragon1: Handle<Image>,
