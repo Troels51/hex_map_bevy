@@ -126,80 +126,80 @@ pub struct HexImageAssets {
     pub m009: Handle<Image>,
     #[asset(path = "textures/M010.png")]
     pub m010: Handle<Image>,
-    // These are not part of the free package
-    // #[asset(path = "textures/Dragon1.png")]
-    // pub dragon1: Handle<Image>,
-    // #[asset(path = "textures/Dragon2.png")]
-    // pub dragon2: Handle<Image>,
-    // #[asset(path = "textures/Dragon3.png")]
-    // pub dragon3: Handle<Image>,
-    // #[asset(path = "textures/Dragon4.png")]
-    // pub dragon4: Handle<Image>,
-    // #[asset(path = "textures/Dragon5.png")]
-    // pub dragon5: Handle<Image>,
-    // #[asset(path = "textures/Dragon6.png")]
-    // pub dragon6: Handle<Image>,
-    // #[asset(path = "textures/Dragon7.png")]
-    // pub dragon7: Handle<Image>,
 
-    // #[asset(path = "textures/F001.png")]
-    // pub f001: Handle<Image>,
-    // #[asset(path = "textures/F002.png")]
-    // pub f002: Handle<Image>,
-    // #[asset(path = "textures/F003.png")]
-    // pub f003: Handle<Image>,
-    // #[asset(path = "textures/F004.png")]
-    // pub f004: Handle<Image>,
-    // #[asset(path = "textures/F005.png")]
-    // pub f005: Handle<Image>,
-    // #[asset(path = "textures/F006.png")]
-    // pub f006: Handle<Image>,
-    // #[asset(path = "textures/F007.png")]
-    // pub f007: Handle<Image>,
-    // #[asset(path = "textures/F008.png")]
-    // pub f008: Handle<Image>,
-    // #[asset(path = "textures/F009.png")]
-    // pub f009: Handle<Image>,
-    // #[asset(path = "textures/F010.png")]
-    // pub f010: Handle<Image>,
+    #[asset(path = "textures/Dragon1.png")]
+    pub dragon1: Handle<Image>,
+    #[asset(path = "textures/Dragon2.png")]
+    pub dragon2: Handle<Image>,
+    #[asset(path = "textures/Dragon3.png")]
+    pub dragon3: Handle<Image>,
+    #[asset(path = "textures/Dragon4.png")]
+    pub dragon4: Handle<Image>,
+    #[asset(path = "textures/Dragon5.png")]
+    pub dragon5: Handle<Image>,
+    #[asset(path = "textures/Dragon6.png")]
+    pub dragon6: Handle<Image>,
+    #[asset(path = "textures/Dragon7.png")]
+    pub dragon7: Handle<Image>,
 
-    // #[asset(path = "textures/LRA01.png")]
-    // pub lra01: Handle<Image>,
-    // #[asset(path = "textures/LRA02.png")]
-    // pub lra02: Handle<Image>,
-    // #[asset(path = "textures/LRA03.png")]
-    // pub lra03: Handle<Image>,
-    // #[asset(path = "textures/LRA04.png")]
-    // pub lra04: Handle<Image>,
-    // #[asset(path = "textures/LRA05.png")]
-    // pub lra05: Handle<Image>,
-    // #[asset(path = "textures/LRA06.png")]
-    // pub lra06: Handle<Image>,
-    // #[asset(path = "textures/LRA07.png")]
-    // pub lra07: Handle<Image>,
-    // #[asset(path = "textures/LRA08.png")]
-    // pub lra08: Handle<Image>,
+    #[asset(path = "textures/F001.png")]
+    pub f001: Handle<Image>,
+    #[asset(path = "textures/F002.png")]
+    pub f002: Handle<Image>,
+    #[asset(path = "textures/F003.png")]
+    pub f003: Handle<Image>,
+    #[asset(path = "textures/F004.png")]
+    pub f004: Handle<Image>,
+    #[asset(path = "textures/F005.png")]
+    pub f005: Handle<Image>,
+    #[asset(path = "textures/F006.png")]
+    pub f006: Handle<Image>,
+    #[asset(path = "textures/F007.png")]
+    pub f007: Handle<Image>,
+    #[asset(path = "textures/F008.png")]
+    pub f008: Handle<Image>,
+    #[asset(path = "textures/F009.png")]
+    pub f009: Handle<Image>,
+    #[asset(path = "textures/F010.png")]
+    pub f010: Handle<Image>,
 
-    // #[asset(path = "textures/R001.png")]
-    // pub r001: Handle<Image>,
-    // #[asset(path = "textures/R002.png")]
-    // pub r002: Handle<Image>,
-    // #[asset(path = "textures/R003.png")]
-    // pub r003: Handle<Image>,
-    // #[asset(path = "textures/R004.png")]
-    // pub r004: Handle<Image>,
-    // #[asset(path = "textures/R005.png")]
-    // pub r005: Handle<Image>,
-    // #[asset(path = "textures/R006.png")]
-    // pub r006: Handle<Image>,
-    // #[asset(path = "textures/R007.png")]
-    // pub r007: Handle<Image>,
-    // #[asset(path = "textures/R008.png")]
-    // pub r008: Handle<Image>,
-    // #[asset(path = "textures/R009.png")]
-    // pub r009: Handle<Image>,
-    // #[asset(path = "textures/R010.png")]
-    // pub r010: Handle<Image>,
+    #[asset(path = "textures/LRA01.png")]
+    pub lra01: Handle<Image>,
+    #[asset(path = "textures/LRA02.png")]
+    pub lra02: Handle<Image>,
+    #[asset(path = "textures/LRA03.png")]
+    pub lra03: Handle<Image>,
+    #[asset(path = "textures/LRA04.png")]
+    pub lra04: Handle<Image>,
+    #[asset(path = "textures/LRA05.png")]
+    pub lra05: Handle<Image>,
+    #[asset(path = "textures/LRA06.png")]
+    pub lra06: Handle<Image>,
+    #[asset(path = "textures/LRA07.png")]
+    pub lra07: Handle<Image>,
+    #[asset(path = "textures/LRA08.png")]
+    pub lra08: Handle<Image>,
+
+    #[asset(path = "textures/R001.png")]
+    pub r001: Handle<Image>,
+    #[asset(path = "textures/R002.png")]
+    pub r002: Handle<Image>,
+    #[asset(path = "textures/R003.png")]
+    pub r003: Handle<Image>,
+    #[asset(path = "textures/R004.png")]
+    pub r004: Handle<Image>,
+    #[asset(path = "textures/R005.png")]
+    pub r005: Handle<Image>,
+    #[asset(path = "textures/R006.png")]
+    pub r006: Handle<Image>,
+    #[asset(path = "textures/R007.png")]
+    pub r007: Handle<Image>,
+    #[asset(path = "textures/R008.png")]
+    pub r008: Handle<Image>,
+    #[asset(path = "textures/R009.png")]
+    pub r009: Handle<Image>,
+    #[asset(path = "textures/R010.png")]
+    pub r010: Handle<Image>,
 }
 
 impl Index<usize> for HexImageAssets {
@@ -270,44 +270,44 @@ impl Index<usize> for HexImageAssets {
             57 => &self.m009,
             58 => &self.m010,
 
-            // 36 => &self.dragon1,
-            // 37 => &self.dragon2,
-            // 38 => &self.dragon3,
-            // 39 => &self.dragon4,
-            // 40 => &self.dragon5,
-            // 41 => &self.dragon6,
-            // 42 => &self.dragon7,
+            59 => &self.dragon1,
+            60 => &self.dragon2,
+            61 => &self.dragon3,
+            62 => &self.dragon4,
+            63 => &self.dragon5,
+            64 => &self.dragon6,
+            65 => &self.dragon7,
 
-            // 43 => &self.f001,
-            // 44 => &self.f002,
-            // 45 => &self.f003,
-            // 46 => &self.f004,
-            // 47 => &self.f005,
-            // 48 => &self.f006,
-            // 49 => &self.f007,
-            // 50 => &self.f008,
-            // 51 => &self.f009,
-            // 52 => &self.f010,
+            66 => &self.f001,
+            67 => &self.f002,
+            68 => &self.f003,
+            69 => &self.f004,
+            70 => &self.f005,
+            71 => &self.f006,
+            72 => &self.f007,
+            73 => &self.f008,
+            74 => &self.f009,
+            75 => &self.f010,
 
-            // 53 => &self.lra01,
-            // 54 => &self.lra02,
-            // 55 => &self.lra03,
-            // 56 => &self.lra04,
-            // 57 => &self.lra05,
-            // 58 => &self.lra06,
-            // 59 => &self.lra07,
-            // 60 => &self.lra08,
+            76 => &self.lra01,
+            77 => &self.lra02,
+            78 => &self.lra03,
+            79 => &self.lra04,
+            80 => &self.lra05,
+            81 => &self.lra06,
+            82 => &self.lra07,
+            83 => &self.lra08,
 
-            // 61 => &self.r001,
-            // 62 => &self.r002,
-            // 63 => &self.r003,
-            // 64 => &self.r004,
-            // 65 => &self.r005,
-            // 66 => &self.r006,
-            // 67 => &self.r007,
-            // 68 => &self.r008,
-            // 69 => &self.r009,
-            // 70 => &self.r010,
+            84 => &self.r001,
+            85 => &self.r002,
+            86 => &self.r003,
+            87 => &self.r004,
+            88 => &self.r005,
+            89 => &self.r006,
+            90 => &self.r007,
+            91 => &self.r008,
+            92 => &self.r009,
+            93 => &self.r010,
             _ => panic!(),
         }
     }
@@ -377,44 +377,45 @@ impl HexImageAssets {
             "M008" => &self.m008,
             "M009" => &self.m009,
             "M010" => &self.m010,
-            // "Dragon1" => &self.dragon1,
-            // "Dragon2" => &self.dragon2,
-            // "Dragon3" => &self.dragon3,
-            // "Dragon4" => &self.dragon4,
-            // "Dragon5" => &self.dragon5,
-            // "Dragon6" => &self.dragon6,
-            // "Dragon7" => &self.dragon7,
 
-            // "F001" => &self.f001,
-            // "F002" => &self.f002,
-            // "F003" => &self.f003,
-            // "F004" => &self.f004,
-            // "F005" => &self.f005,
-            // "F006" => &self.f006,
-            // "F007" => &self.f007,
-            // "F008" => &self.f008,
-            // "F009" => &self.f009,
-            // "F010" => &self.f010,
+            "Dragon1" => &self.dragon1,
+            "Dragon2" => &self.dragon2,
+            "Dragon3" => &self.dragon3,
+            "Dragon4" => &self.dragon4,
+            "Dragon5" => &self.dragon5,
+            "Dragon6" => &self.dragon6,
+            "Dragon7" => &self.dragon7,
 
-            // "LRA01" => &self.lra01,
-            // "LRA02" => &self.lra02,
-            // "LRA03" => &self.lra03,
-            // "LRA04" => &self.lra04,
-            // "LRA05" => &self.lra05,
-            // "LRA06" => &self.lra06,
-            // "LRA07" => &self.lra07,
-            // "LRA08" => &self.lra08,
+            "F001" => &self.f001,
+            "F002" => &self.f002,
+            "F003" => &self.f003,
+            "F004" => &self.f004,
+            "F005" => &self.f005,
+            "F006" => &self.f006,
+            "F007" => &self.f007,
+            "F008" => &self.f008,
+            "F009" => &self.f009,
+            "F010" => &self.f010,
 
-            // "R001" => &self.r001,
-            // "R002" => &self.r002,
-            // "R003" => &self.r003,
-            // "R004" => &self.r004,
-            // "R005" => &self.r005,
-            // "R006" => &self.r006,
-            // "R007" => &self.r007,
-            // "R008" => &self.r008,
-            // "R009" => &self.r009,
-            // "R010" => &self.r010,
+            "LRA01" => &self.lra01,
+            "LRA02" => &self.lra02,
+            "LRA03" => &self.lra03,
+            "LRA04" => &self.lra04,
+            "LRA05" => &self.lra05,
+            "LRA06" => &self.lra06,
+            "LRA07" => &self.lra07,
+            "LRA08" => &self.lra08,
+
+            "R001" => &self.r001,
+            "R002" => &self.r002,
+            "R003" => &self.r003,
+            "R004" => &self.r004,
+            "R005" => &self.r005,
+            "R006" => &self.r006,
+            "R007" => &self.r007,
+            "R008" => &self.r008,
+            "R009" => &self.r009,
+            "R010" => &self.r010,
             _ => panic!("{}", key),
         }
     }

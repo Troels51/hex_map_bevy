@@ -133,77 +133,78 @@ pub struct HexDescriptions {
     pub m009: Handle<Hex>,
     #[asset(path = "hexes/M010.hex")]
     pub m010: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon1.hex")]
-    // pub dragon1: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon2.hex")]
-    // pub dragon2: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon3.hex")]
-    // pub dragon3: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon4.hex")]
-    // pub dragon4: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon5.hex")]
-    // pub dragon5: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon6.hex")]
-    // pub dragon6: Handle<Hex>,
-    // #[asset(path = "hexes/Dragon7.hex")]
-    // pub dragon7: Handle<Hex>,
 
-    // #[asset(path = "hexes/F001.hex")]
-    // pub f001: Handle<Hex>,
-    // #[asset(path = "hexes/F002.hex")]
-    // pub f002: Handle<Hex>,
-    // #[asset(path = "hexes/F003.hex")]
-    // pub f003: Handle<Hex>,
-    // #[asset(path = "hexes/F004.hex")]
-    // pub f004: Handle<Hex>,
-    // #[asset(path = "hexes/F005.hex")]
-    // pub f005: Handle<Hex>,
-    // #[asset(path = "hexes/F006.hex")]
-    // pub f006: Handle<Hex>,
-    // #[asset(path = "hexes/F007.hex")]
-    // pub f007: Handle<Hex>,
-    // #[asset(path = "hexes/F008.hex")]
-    // pub f008: Handle<Hex>,
-    // #[asset(path = "hexes/F009.hex")]
-    // pub f009: Handle<Hex>,
-    // #[asset(path = "hexes/F010.hex")]
-    // pub f010: Handle<Hex>,
+    #[asset(path = "hexes/Dragon1.hex")]
+    pub dragon1: Handle<Hex>,
+    #[asset(path = "hexes/Dragon2.hex")]
+    pub dragon2: Handle<Hex>,
+    #[asset(path = "hexes/Dragon3.hex")]
+    pub dragon3: Handle<Hex>,
+    #[asset(path = "hexes/Dragon4.hex")]
+    pub dragon4: Handle<Hex>,
+    #[asset(path = "hexes/Dragon5.hex")]
+    pub dragon5: Handle<Hex>,
+    #[asset(path = "hexes/Dragon6.hex")]
+    pub dragon6: Handle<Hex>,
+    #[asset(path = "hexes/Dragon7.hex")]
+    pub dragon7: Handle<Hex>,
 
-    // #[asset(path = "hexes/LRA01.hex")]
-    // pub lra01: Handle<Hex>,
-    // #[asset(path = "hexes/LRA02.hex")]
-    // pub lra02: Handle<Hex>,
-    // #[asset(path = "hexes/LRA03.hex")]
-    // pub lra03: Handle<Hex>,
-    // #[asset(path = "hexes/LRA04.hex")]
-    // pub lra04: Handle<Hex>,
-    // #[asset(path = "hexes/LRA05.hex")]
-    // pub lra05: Handle<Hex>,
-    // #[asset(path = "hexes/LRA06.hex")]
-    // pub lra06: Handle<Hex>,
-    // #[asset(path = "hexes/LRA07.hex")]
-    // pub lra07: Handle<Hex>,
-    // #[asset(path = "hexes/LRA08.hex")]
-    // pub lra08: Handle<Hex>,
+    #[asset(path = "hexes/F001.hex")]
+    pub f001: Handle<Hex>,
+    #[asset(path = "hexes/F002.hex")]
+    pub f002: Handle<Hex>,
+    #[asset(path = "hexes/F003.hex")]
+    pub f003: Handle<Hex>,
+    #[asset(path = "hexes/F004.hex")]
+    pub f004: Handle<Hex>,
+    #[asset(path = "hexes/F005.hex")]
+    pub f005: Handle<Hex>,
+    #[asset(path = "hexes/F006.hex")]
+    pub f006: Handle<Hex>,
+    #[asset(path = "hexes/F007.hex")]
+    pub f007: Handle<Hex>,
+    #[asset(path = "hexes/F008.hex")]
+    pub f008: Handle<Hex>,
+    #[asset(path = "hexes/F009.hex")]
+    pub f009: Handle<Hex>,
+    #[asset(path = "hexes/F010.hex")]
+    pub f010: Handle<Hex>,
 
-    // #[asset(path = "hexes/R001.hex")]
-    // pub r001: Handle<Hex>,
-    // #[asset(path = "hexes/R002.hex")]
-    // pub r002: Handle<Hex>,
-    // #[asset(path = "hexes/R003.hex")]
-    // pub r003: Handle<Hex>,
-    // #[asset(path = "hexes/R004.hex")]
-    // pub r004: Handle<Hex>,
-    // #[asset(path = "hexes/R005.hex")]
-    // pub r005: Handle<Hex>,
-    // #[asset(path = "hexes/R006.hex")]
-    // pub r006: Handle<Hex>,
-    // #[asset(path = "hexes/R007.hex")]
-    // pub r007: Handle<Hex>,
-    // #[asset(path = "hexes/R008.hex")]
-    // pub r008: Handle<Hex>,
-    // #[asset(path = "hexes/R009.hex")]
-    // pub r009: Handle<Hex>,
-    // #[asset(path = "hexes/R010.hex")]
-    // pub r010: Handle<Hex>,
+    #[asset(path = "hexes/LRA01.hex")]
+    pub lra01: Handle<Hex>,
+    #[asset(path = "hexes/LRA02.hex")]
+    pub lra02: Handle<Hex>,
+    #[asset(path = "hexes/LRA03.hex")]
+    pub lra03: Handle<Hex>,
+    #[asset(path = "hexes/LRA04.hex")]
+    pub lra04: Handle<Hex>,
+    #[asset(path = "hexes/LRA05.hex")]
+    pub lra05: Handle<Hex>,
+    #[asset(path = "hexes/LRA06.hex")]
+    pub lra06: Handle<Hex>,
+    #[asset(path = "hexes/LRA07.hex")]
+    pub lra07: Handle<Hex>,
+    #[asset(path = "hexes/LRA08.hex")]
+    pub lra08: Handle<Hex>,
+
+    #[asset(path = "hexes/R001.hex")]
+    pub r001: Handle<Hex>,
+    #[asset(path = "hexes/R002.hex")]
+    pub r002: Handle<Hex>,
+    #[asset(path = "hexes/R003.hex")]
+    pub r003: Handle<Hex>,
+    #[asset(path = "hexes/R004.hex")]
+    pub r004: Handle<Hex>,
+    #[asset(path = "hexes/R005.hex")]
+    pub r005: Handle<Hex>,
+    #[asset(path = "hexes/R006.hex")]
+    pub r006: Handle<Hex>,
+    #[asset(path = "hexes/R007.hex")]
+    pub r007: Handle<Hex>,
+    #[asset(path = "hexes/R008.hex")]
+    pub r008: Handle<Hex>,
+    #[asset(path = "hexes/R009.hex")]
+    pub r009: Handle<Hex>,
+    #[asset(path = "hexes/R010.hex")]
+    pub r010: Handle<Hex>,
 }
