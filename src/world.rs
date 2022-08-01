@@ -60,8 +60,10 @@ fn setup(
     let center_pixel = center.to_pixel(*spacing);
 
     //Spawn camera
-    let mut camera = Camera2dBundle::default();
-    camera.transform = Transform::from_xyz(center_pixel.0, center_pixel.1, 0f32);
+    let mut camera = Camera2dBundle { 
+        transform: Transform::from_xyz(center_pixel.0, center_pixel.1, 0f32),
+        ..Default::default()
+    };
     camera.projection.scale = BOARD_SIZE as f32;
     commands.spawn_bundle(camera);
 
