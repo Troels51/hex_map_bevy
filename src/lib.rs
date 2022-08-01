@@ -8,11 +8,6 @@ use bevy::app::App;
 
 use bevy::prelude::*;
 
-use bevy_4x_camera::FourXCameraPlugin;
-
-use bevy_mod_picking::*;
-use bevy_mod_picking::{DebugCursorPickingPlugin, InteractablePickingPlugin};
-
 use world::WorldPlugin;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -28,11 +23,6 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_state(GameState::Loading)
             .add_plugin(LoadingPlugin)
-            .add_plugin(PickingPlugin)
-            .add_plugin(InteractablePickingPlugin)
-            .add_plugin(DebugCursorPickingPlugin)
-            .add_plugin(DebugCursorPickingPlugin)
-            .add_plugin(FourXCameraPlugin)
             .add_plugin(WorldPlugin);
         #[cfg(debug_assertions)]
         {
@@ -42,3 +32,9 @@ impl Plugin for GamePlugin {
         }
     }
 }
+
+// .add_plugin(PickingPlugin)
+// .add_plugin(InteractablePickingPlugin)
+// .add_plugin(DebugCursorPickingPlugin)
+// .add_plugin(DebugCursorPickingPlugin)
+// .add_plugin(FourXCameraPlugin)

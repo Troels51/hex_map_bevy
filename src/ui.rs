@@ -1,12 +1,11 @@
 use bevy::{
     hierarchy::BuildChildren,
-    math::{Rect, Size},
     prelude::{
         App, AssetServer, Color, Commands, Component, NodeBundle, Plugin, Res, ResMut, SystemSet,
-        TextBundle, UiCameraBundle,
+        TextBundle,
     },
     text::{Text, TextStyle},
-    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Style, Val},
+    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Size, Style, UiRect, Val},
 };
 
 use crate::{loading::hex_models::HexImageAssets, GameState};
@@ -30,7 +29,6 @@ fn setup_ui(
     _hex_image_assets: Res<HexImageAssets>,
 ) {
     // ui camera
-    commands.spawn_bundle(UiCameraBundle::default());
 
     // root node
     commands
@@ -48,8 +46,8 @@ fn setup_ui(
             parent
                 .spawn_bundle(NodeBundle {
                     style: Style {
+                        border: UiRect::all(Val::Px(2.0)),
                         size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                        border: Rect::all(Val::Px(2.0)),
                         ..Default::default()
                     },
                     color: Color::rgb(0.65, 0.65, 0.65).into(),
@@ -71,17 +69,16 @@ fn setup_ui(
                             // text
                             parent.spawn_bundle(TextBundle {
                                 style: Style {
-                                    margin: Rect::all(Val::Px(5.0)),
+                                    margin: UiRect::all(Val::Px(5.0)),
                                     ..Default::default()
                                 },
-                                text: Text::with_section(
+                                text: Text::from_section(
                                     "",
                                     TextStyle {
                                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                         font_size: 30.0,
                                         color: Color::WHITE,
                                     },
-                                    Default::default(),
                                 ),
                                 ..Default::default()
                             });
@@ -103,12 +100,12 @@ fn setup_ui(
                 style: Style {
                     size: Size::new(Val::Px(350.0), Val::Px(350.0)),
                     position_type: PositionType::Absolute,
-                    position: Rect {
+                    position: UiRect {
                         left: Val::Px(210.0),
                         bottom: Val::Px(10.0),
                         ..Default::default()
                     },
-                    border: Rect::all(Val::Px(20.0)),
+                    border: UiRect::all(Val::Px(20.0)),
                     ..Default::default()
                 },
                 color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),

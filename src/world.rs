@@ -60,9 +60,9 @@ fn setup(
     let center_pixel = center.to_pixel(*spacing);
 
     //Spawn camera
-    let mut camera = OrthographicCameraBundle::new_2d();
+    let mut camera = Camera2dBundle::default();
     camera.transform = Transform::from_xyz(center_pixel.0, center_pixel.1, 0f32);
-    camera.orthographic_projection.scale = BOARD_SIZE as f32;
+    camera.projection.scale = BOARD_SIZE as f32;
     commands.spawn_bundle(camera);
 
     spawn_board(center, board, hex_model_assets, spacing, commands);
