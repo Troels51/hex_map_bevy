@@ -1,14 +1,7 @@
-use bevy::{
-    hierarchy::BuildChildren,
-    prelude::{
-        App, AssetServer, Color, Commands, Component, NodeBundle, Plugin, Res, ResMut, SystemSet,
-        TextBundle,
-    },
-    text::{Text, TextStyle},
-    ui::{AlignItems, FlexDirection, JustifyContent, PositionType, Size, Style, UiRect, Val},
-};
+use bevy::prelude::{App, EventWriter, OrthographicProjection, Plugin, Query, ResMut};
+use bevy_egui::{egui, EguiContext, EguiPlugin};
 
-use crate::{loading::hex_models::HexImageAssets, GameState};
+use crate::world::BoardGenerateEvent;
 
 pub struct UIPlugin;
 
@@ -16,100 +9,35 @@ pub struct UIPlugin;
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_ui));
+        app.add_plugin(EguiPlugin)
+            .insert_resource::<UiState>(UiState { board_size: 10 })
+            .add_system(setup_egui);
     }
 }
+#[derive(Default)]
+pub struct UiState {
+    pub board_size: u32,
+}
 
-#[derive(Component)]
-struct HexChooserUI;
-
-fn setup_ui(
-    mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
-    _hex_image_assets: Res<HexImageAssets>,
+fn setup_egui(
+    mut egui_context: ResMut<EguiContext>,
+    mut ui_state: ResMut<UiState>,
+    mut generate_board_events: EventWriter<BoardGenerateEvent>,
+    mut projection_query: Query<&mut OrthographicProjection>,
 ) {
-    // ui camera
+    egui::Window::new("Settings").show(egui_context.ctx_mut(), |ui| {
+        ui.label("Board size");
+        ui.add(egui::Slider::new(&mut ui_state.board_size, 0..=25));
+        if ui.button("Generate board").clicked() {
+            generate_board_events.send_default();
+        }
 
-    // root node
-    commands
-        .spawn_bundle(NodeBundle {
-            style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                justify_content: JustifyContent::SpaceBetween,
-                ..Default::default()
-            },
-            color: Color::NONE.into(),
-            ..Default::default()
-        })
-        .with_children(|parent| {
-            // left vertical fill (border)
-            parent
-                .spawn_bundle(NodeBundle {
-                    style: Style {
-                        border: UiRect::all(Val::Px(2.0)),
-                        size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                        ..Default::default()
-                    },
-                    color: Color::rgb(0.65, 0.65, 0.65).into(),
-                    ..Default::default()
-                })
-                .with_children(|parent| {
-                    // left vertical fill (content)
-                    parent
-                        .spawn_bundle(NodeBundle {
-                            style: Style {
-                                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                                align_items: AlignItems::FlexEnd,
-                                ..Default::default()
-                            },
-                            color: Color::rgb(0.15, 0.15, 0.15).into(),
-                            ..Default::default()
-                        })
-                        .with_children(|parent| {
-                            // text
-                            parent.spawn_bundle(TextBundle {
-                                style: Style {
-                                    margin: UiRect::all(Val::Px(5.0)),
-                                    ..Default::default()
-                                },
-                                text: Text::from_section(
-                                    "",
-                                    TextStyle {
-                                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                                        font_size: 30.0,
-                                        color: Color::WHITE,
-                                    },
-                                ),
-                                ..Default::default()
-                            });
-                        });
-                });
-            // right vertical fill
-            parent.spawn_bundle(NodeBundle {
-                style: Style {
-                    flex_direction: FlexDirection::ColumnReverse,
-                    justify_content: JustifyContent::Center,
-                    size: Size::new(Val::Px(200.0), Val::Percent(100.0)),
-                    ..Default::default()
-                },
-                color: Color::rgb(0.15, 0.15, 0.15).into(),
-                ..Default::default()
-            });
-            // absolute positioning
-            parent.spawn_bundle(NodeBundle {
-                style: Style {
-                    size: Size::new(Val::Px(350.0), Val::Px(350.0)),
-                    position_type: PositionType::Absolute,
-                    position: UiRect {
-                        left: Val::Px(210.0),
-                        bottom: Val::Px(10.0),
-                        ..Default::default()
-                    },
-                    border: UiRect::all(Val::Px(20.0)),
-                    ..Default::default()
-                },
-                color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
-                ..Default::default()
-            });
-        });
+        ui.separator();
+        ui.label("Zoom");
+        for mut projection in projection_query.iter_mut() {
+            let mut log_scale = projection.scale.ln();
+            ui.add(egui::Slider::new(&mut log_scale, 1.0..=4.0));
+            projection.scale = log_scale.exp();
+        }
+    });
 }

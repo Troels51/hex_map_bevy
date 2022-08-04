@@ -115,7 +115,6 @@ impl Board {
         }
     }
 
-    //TODO: Not sure if works
     pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<Hex> {
         if let Some(hex) = self.get(coordinate) {
             return self

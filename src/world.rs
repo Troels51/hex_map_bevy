@@ -7,6 +7,7 @@ use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
 use crate::loading::hex_models::HexImageAssets;
+use crate::ui::UiState;
 use crate::GameState;
 
 pub struct WorldPlugin;
@@ -20,20 +21,22 @@ impl Plugin for WorldPlugin {
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
             .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
             .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
+            .add_event::<BoardGenerateEvent>()
             .add_system_set(
                 SystemSet::on_update(GameState::Playing).with_system(player_camera_control),
             )
-            .add_system_set(
-                SystemSet::on_update(GameState::Playing).with_system(spawn_board_on_press),
-            );
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(generate_board))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(keyboard_react));
     }
 }
 
 // //Constants
 // const SPACING: Spacing = Spacing::FlatTop(451.00f32);
 
-const BOARD_SIZE: i32 = 10;
-const BSIZE: usize = 100;
+const BSIZE: usize = 1000;
+
+#[derive(Default)]
+pub struct BoardGenerateEvent;
 
 #[derive(Component)]
 struct HexTag;
@@ -47,6 +50,7 @@ fn setup(
     hex_desc_assets: Res<Assets<Hex>>,
     spacing: Res<Spacing<f32>>,
     mut board: ResMut<Board>,
+    ui_state: Res<UiState>,
 ) {
     for (_handle, hex) in hex_desc_assets.iter() {
         board.add_possible_hex(hex);
@@ -56,18 +60,25 @@ fn setup(
         brightness: 0.3,
     });
 
-    let center = Coordinate::new(10, 10);
+    let center = Coordinate::new(100, 100);
     let center_pixel = center.to_pixel(*spacing);
 
     //Spawn camera
-    let mut camera = Camera2dBundle { 
+    let mut camera = Camera2dBundle {
         transform: Transform::from_xyz(center_pixel.0, center_pixel.1, 0f32),
         ..Default::default()
     };
-    camera.projection.scale = BOARD_SIZE as f32;
+    camera.projection.scale = ui_state.board_size as f32;
     commands.spawn_bundle(camera);
 
-    spawn_board(center, board, hex_model_assets, spacing, commands);
+    spawn_board(
+        center,
+        board,
+        hex_model_assets,
+        spacing,
+        commands,
+        ui_state.board_size,
+    );
 }
 
 fn spawn_board(
@@ -76,10 +87,11 @@ fn spawn_board(
     hex_model_assets: Res<HexImageAssets>,
     spacing: Res<Spacing<f32>>,
     mut commands: Commands,
+    board_size: u32,
 ) {
     let center_pixel = center.to_pixel(*spacing);
     // spawn the game board
-    for ring_radius in 0..BOARD_SIZE {
+    for ring_radius in 0..board_size as i32 {
         let ring = center.ring_iter(ring_radius, Spin::CW(hex2d::Direction::YZ));
         for cell_coord in ring {
             let pixel = cell_coord.to_pixel(*spacing);
@@ -107,23 +119,41 @@ fn spawn_board(
     }
 }
 
-fn spawn_board_on_press(
-    keys: Res<Input<KeyCode>>,
+fn generate_board(
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexImageAssets>,
     hex_entities: Query<Entity, With<HexTag>>,
     spacing: Res<Spacing<f32>>,
     mut commands: Commands,
+    ui_state: Res<UiState>,
+    generate_board_events: EventReader<BoardGenerateEvent>,
 ) {
-    if keys.just_pressed(KeyCode::X) {
+    if !generate_board_events.is_empty() {
         //trigger despawn of board
         for entity in hex_entities.iter() {
             commands.entity(entity).despawn_recursive();
         }
         board.reset();
         //then trigger spawn of board
-        let center = Coordinate::new(10, 10);
-        spawn_board(center, board, hex_model_assets, spacing, commands);
+        let center = Coordinate::new(100, 100);
+        spawn_board(
+            center,
+            board,
+            hex_model_assets,
+            spacing,
+            commands,
+            ui_state.board_size,
+        );
+    }
+    generate_board_events.clear();
+}
+
+fn keyboard_react(
+    keys: Res<Input<KeyCode>>,
+    mut generate_board_events: EventWriter<BoardGenerateEvent>,
+) {
+    if keys.just_pressed(KeyCode::X) {
+        generate_board_events.send_default();
     }
 }
 

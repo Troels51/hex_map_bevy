@@ -40,6 +40,7 @@ rand = "0.8.3"
 hex2d = "1.1.0"
 bevy_common_assets = { version = "0.3.0", features = ["ron"]}
 #bevy_editor_pls = {git = "https://github.com/jakobhellermann/bevy_editor_pls.git", branch = "main"}
+bevy_egui = "0.15"
 
 
 [target.'cfg(target_os = "linux")'.dependencies]
