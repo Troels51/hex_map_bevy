@@ -115,6 +115,18 @@ fn spawn_board(
                     .insert(HexTag)
                     .insert(hex.clone());
             }
+            else {
+                let model = hex_model_assets.blank.clone();
+                let transform =
+                    Transform::from_xyz(pixel.0, 2f32 * center_pixel.1 - pixel.1, 0.0f32);
+                commands
+                    .spawn_bundle(SpriteBundle {
+                        texture: model.clone(),
+                        transform,
+                        ..default()
+                    })
+                    .insert(HexTag);
+            }
         }
     }
 }
