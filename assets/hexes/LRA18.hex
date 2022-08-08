@@ -1,0 +1,5 @@
+(
+  name: "LRA18",
+  sides: (Grass, Grass, Grass, Grass, Grass, Road),
+  rotation: 0,
+)

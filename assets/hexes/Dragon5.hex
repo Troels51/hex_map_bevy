@@ -1,5 +1,5 @@
 (
-  name: "C001",
+  name: "Dragon5",
   sides: (Ocean, Ocean, Ocean, Grass, Road, Grass),
   rotation: 0,
 )

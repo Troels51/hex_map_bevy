@@ -1,0 +1,5 @@
+(
+  name: "LRA10",
+  sides: (Ocean, Road, Grass, Ocean, Road, Road),
+  rotation: 0,
+)

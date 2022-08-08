@@ -1,0 +1,5 @@
+(
+  name: "Terrain012",
+  sides: (Grass, Grass, Ocean, Grass, Grass, Grass),
+  rotation: 0,
+)

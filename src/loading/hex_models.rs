@@ -179,6 +179,30 @@ pub struct HexImageAssets {
     pub lra07: Handle<Image>,
     #[asset(path = "textures/LRA08.png")]
     pub lra08: Handle<Image>,
+    #[asset(path = "textures/LRA09.png")]
+    pub lra09: Handle<Image>,
+    #[asset(path = "textures/LRA10.png")]
+    pub lra10: Handle<Image>,
+    #[asset(path = "textures/LRA11.png")]
+    pub lra11: Handle<Image>,
+    #[asset(path = "textures/LRA12.png")]
+    pub lra12: Handle<Image>,
+    #[asset(path = "textures/LRA13.png")]
+    pub lra13: Handle<Image>,
+    #[asset(path = "textures/LRA14.png")]
+    pub lra14: Handle<Image>,
+    #[asset(path = "textures/LRA15.png")]
+    pub lra15: Handle<Image>,
+    #[asset(path = "textures/LRA16.png")]
+    pub lra16: Handle<Image>,
+    #[asset(path = "textures/LRA17.png")]
+    pub lra17: Handle<Image>,
+    #[asset(path = "textures/LRA18.png")]
+    pub lra18: Handle<Image>,
+    #[asset(path = "textures/LRA19.png")]
+    pub lra19: Handle<Image>,
+    #[asset(path = "textures/LRA20.png")]
+    pub lra20: Handle<Image>,
 
     #[asset(path = "textures/R001.png")]
     pub r001: Handle<Image>,
@@ -200,6 +224,37 @@ pub struct HexImageAssets {
     pub r009: Handle<Image>,
     #[asset(path = "textures/R010.png")]
     pub r010: Handle<Image>,
+
+    #[asset(path = "textures/Terrain001.png")]
+    pub terrain001: Handle<Image>,
+    #[asset(path = "textures/Terrain002.png")]
+    pub terrain002: Handle<Image>,
+    #[asset(path = "textures/Terrain003.png")]
+    pub terrain003: Handle<Image>,
+    #[asset(path = "textures/Terrain004.png")]
+    pub terrain004: Handle<Image>,
+    #[asset(path = "textures/Terrain005.png")]
+    pub terrain005: Handle<Image>,
+    #[asset(path = "textures/Terrain006.png")]
+    pub terrain006: Handle<Image>,
+    #[asset(path = "textures/Terrain007.png")]
+    pub terrain007: Handle<Image>,
+    #[asset(path = "textures/Terrain008.png")]
+    pub terrain008: Handle<Image>,
+    #[asset(path = "textures/Terrain009.png")]
+    pub terrain009: Handle<Image>,
+    #[asset(path = "textures/Terrain010.png")]
+    pub terrain010: Handle<Image>,
+    #[asset(path = "textures/Terrain011.png")]
+    pub terrain011: Handle<Image>,
+    #[asset(path = "textures/Terrain012.png")]
+    pub terrain012: Handle<Image>,
+    #[asset(path = "textures/Terrain013.png")]
+    pub terrain013: Handle<Image>,
+    #[asset(path = "textures/Terrain014.png")]
+    pub terrain014: Handle<Image>,
+    #[asset(path = "textures/Terrain015.png")]
+    pub terrain015: Handle<Image>,
 }
 
 impl Index<usize> for HexImageAssets {
@@ -297,17 +352,45 @@ impl Index<usize> for HexImageAssets {
             81 => &self.lra06,
             82 => &self.lra07,
             83 => &self.lra08,
+            84 => &self.lra09,
+            85 => &self.lra10,
+            86 => &self.lra11,
+            87 => &self.lra12,
+            88 => &self.lra13,
+            89 => &self.lra14,
+            90 => &self.lra15,
+            91 => &self.lra16,
+            92 => &self.lra17,
+            93 => &self.lra18,
+            94 => &self.lra19,
+            95 => &self.lra20,
 
-            84 => &self.r001,
-            85 => &self.r002,
-            86 => &self.r003,
-            87 => &self.r004,
-            88 => &self.r005,
-            89 => &self.r006,
-            90 => &self.r007,
-            91 => &self.r008,
-            92 => &self.r009,
-            93 => &self.r010,
+            96 => &self.r001,
+            97 => &self.r002,
+            98 => &self.r003,
+            99 => &self.r004,
+            100 => &self.r005,
+            101 => &self.r006,
+            102 => &self.r007,
+            103 => &self.r008,
+            104 => &self.r009,
+            105 => &self.r010,
+
+            106 => &self.terrain001,
+            107 => &self.terrain002,
+            108 => &self.terrain003,
+            109 => &self.terrain004,
+            110 => &self.terrain005,
+            111 => &self.terrain006,
+            112 => &self.terrain007,
+            113 => &self.terrain008,
+            114 => &self.terrain009,
+            115 => &self.terrain010,
+            116 => &self.terrain011,
+            117 => &self.terrain012,
+            118 => &self.terrain013,
+            119 => &self.terrain014,
+            120 => &self.terrain015,
             _ => panic!(),
         }
     }
@@ -405,6 +488,18 @@ impl HexImageAssets {
             "LRA06" => &self.lra06,
             "LRA07" => &self.lra07,
             "LRA08" => &self.lra08,
+            "LRA09" => &self.lra09,
+            "LRA10" => &self.lra10,
+            "LRA11" => &self.lra11,
+            "LRA12" => &self.lra12,
+            "LRA13" => &self.lra13,
+            "LRA14" => &self.lra14,
+            "LRA15" => &self.lra15,
+            "LRA16" => &self.lra16,
+            "LRA17" => &self.lra17,
+            "LRA18" => &self.lra18,
+            "LRA19" => &self.lra19,
+            "LRA20" => &self.lra20,
 
             "R001" => &self.r001,
             "R002" => &self.r002,
@@ -416,6 +511,23 @@ impl HexImageAssets {
             "R008" => &self.r008,
             "R009" => &self.r009,
             "R010" => &self.r010,
+
+            "Terrain001" => &self.terrain001,
+            "Terrain002" => &self.terrain002,
+            "Terrain003" => &self.terrain003,
+            "Terrain004" => &self.terrain004,
+            "Terrain005" => &self.terrain005,
+            "Terrain006" => &self.terrain006,
+            "Terrain007" => &self.terrain007,
+            "Terrain008" => &self.terrain008,
+            "Terrain009" => &self.terrain009,
+            "Terrain010" => &self.terrain010,
+            "Terrain011" => &self.terrain011,
+            "Terrain012" => &self.terrain012,
+            "Terrain013" => &self.terrain013,
+            "Terrain014" => &self.terrain014,
+            "Terrain015" => &self.terrain015,
+
             _ => panic!("{}", key),
         }
     }
