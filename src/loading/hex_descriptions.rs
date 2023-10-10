@@ -1,6 +1,6 @@
 use bevy::asset::HandleUntyped;
 use bevy::ecs::world::World;
-use bevy::prelude::{AssetServer, Component, Handle};
+use bevy::prelude::{AssetServer, Component, Handle, Resource};
 use bevy_asset_loader::prelude::AssetCollection;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ use bevy::ecs::world::Mut;
 pub struct Angle(hex2d::Angle);
 
 // Loading a folder doesnt work for web. Maybe we need to figure out a way to get both?
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct HexDescriptions {
     //#[asset(path = "hexes/blank.hex")]
     //pub bland: Handle<Hex>,

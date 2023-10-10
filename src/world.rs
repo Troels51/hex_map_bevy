@@ -2,7 +2,7 @@ use bevy::app::App;
 use bevy::render::camera::Camera;
 use bevy::{ecs::schedule::SystemSet, prelude::*};
 
-use hex2d::{self, Coordinate, Spacing, Spin};
+use hex2d::{self, Coordinate, Spin};
 use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
@@ -17,16 +17,14 @@ pub struct WorldPlugin;
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Board::new(BSIZE, BSIZE))
-            .insert_resource(Spacing::FlatTop(450f32))
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
-            .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
-            .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
+            .insert_resource(Spacing(hex2d::Spacing::FlatTop(450f32)))
+            .add_systems(OnEnter(GameState::Playing),setup)
+            .add_systems(OnExit(GameState::Playing), teardown)
+            .add_systems(OnExit(GameState::GameOver), teardown)
             .add_event::<BoardGenerateEvent>()
-            .add_system_set(
-                SystemSet::on_update(GameState::Playing).with_system(player_camera_control),
-            )
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(generate_board))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(keyboard_react));
+            .add_systems(Update, player_camera_control.run_if(in_state(GameState::Playing)))
+            .add_systems(Update, generate_board.run_if(in_state(GameState::Playing)))
+            .add_systems(Update, keyboard_react.run_if(in_state(GameState::Playing)));
     }
 }
 
@@ -35,7 +33,7 @@ impl Plugin for WorldPlugin {
 
 const BSIZE: usize = 1000;
 
-#[derive(Default)]
+#[derive(Default, Event)]
 pub struct BoardGenerateEvent;
 
 #[derive(Component)]
@@ -44,24 +42,27 @@ struct HexTag;
 #[derive(Debug, Clone, Copy, Component)]
 pub struct CellCoord(hex2d::Coordinate);
 
+#[derive(Resource)]
+struct Spacing(hex2d::Spacing);
+
 fn setup(
     mut commands: Commands,
     hex_model_assets: Res<HexImageAssets>,
     hex_desc_assets: Res<Assets<Hex>>,
-    spacing: Res<Spacing<f32>>,
+    spacing: Res<Spacing>,
     mut board: ResMut<Board>,
     ui_state: Res<UiState>,
 ) {
     for (_handle, hex) in hex_desc_assets.iter() {
         board.add_possible_hex(hex);
     }
-    commands.insert_resource(AmbientLight {
-        color: Color::WHITE,
-        brightness: 0.3,
-    });
+    // commands.insert_resource(AmbientLight {
+    //     color: Color::WHITE,
+    //     brightness: 0.3,
+    // });
 
     let center = Coordinate::new(100, 100);
-    let center_pixel = center.to_pixel(*spacing);
+    let center_pixel = center.to_pixel(spacing.0);
 
     //Spawn camera
     let mut camera = Camera2dBundle {
@@ -69,7 +70,7 @@ fn setup(
         ..Default::default()
     };
     camera.projection.scale = ui_state.board_size as f32;
-    commands.spawn_bundle(camera);
+    commands.spawn(camera);
 
     spawn_board(
         center,
@@ -85,16 +86,16 @@ fn spawn_board(
     center: Coordinate,
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexImageAssets>,
-    spacing: Res<Spacing<f32>>,
+    spacing: Res<Spacing>,
     mut commands: Commands,
     board_size: u32,
 ) {
-    let center_pixel = center.to_pixel(*spacing);
+    let center_pixel = center.to_pixel(spacing.0);
     // spawn the game board
     for ring_radius in 0..board_size as i32 {
         let ring = center.ring_iter(ring_radius, Spin::CW(hex2d::Direction::YZ));
         for cell_coord in ring {
-            let pixel = cell_coord.to_pixel(*spacing);
+            let pixel = cell_coord.to_pixel(spacing.0);
             let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord);
             if let Some(hex) = posibility_space.iter().choose(&mut rand::thread_rng()) {
                 board.set(cell_coord, hex.clone());
@@ -107,7 +108,7 @@ fn spawn_board(
                 ));
 
                 commands
-                    .spawn_bundle(SpriteBundle {
+                    .spawn(SpriteBundle {
                         texture: model.clone(),
                         transform,
                         ..default()
@@ -120,7 +121,7 @@ fn spawn_board(
                 let transform =
                     Transform::from_xyz(pixel.0, 2f32 * center_pixel.1 - pixel.1, 0.0f32);
                 commands
-                    .spawn_bundle(SpriteBundle {
+                    .spawn(SpriteBundle {
                         texture: model.clone(),
                         transform,
                         ..default()
@@ -135,10 +136,10 @@ fn generate_board(
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexImageAssets>,
     hex_entities: Query<Entity, With<HexTag>>,
-    spacing: Res<Spacing<f32>>,
+    spacing: Res<Spacing>,
     mut commands: Commands,
     ui_state: Res<UiState>,
-    generate_board_events: EventReader<BoardGenerateEvent>,
+    mut generate_board_events: EventReader<BoardGenerateEvent>,
 ) {
     if !generate_board_events.is_empty() {
         //trigger despawn of board

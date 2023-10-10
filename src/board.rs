@@ -1,8 +1,8 @@
-use bevy::{prelude::Component, reflect::TypeUuid};
+use bevy::{prelude::{Component, Resource}, reflect::{TypeUuid, TypePath}};
 use hex2d::Angle;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Resource)]
 pub struct Board {
     hexes: Vec<Vec<Hex>>,
     possible_hexes: Vec<Hex>,
@@ -51,7 +51,7 @@ fn match_sides(side1: &HexSides, side2: &HexSides) -> bool {
     false
 }
 
-#[derive(Serialize, Deserialize, TypeUuid, Debug, Clone, PartialEq, Component)]
+#[derive(Serialize, Deserialize, TypeUuid, Debug, Clone, PartialEq, Component, TypePath)]
 #[uuid = "64271346-f11a-4736-ae17-6876acf29761"]
 pub struct Hex {
     pub sides: HexSides,

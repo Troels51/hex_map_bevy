@@ -1,17 +1,23 @@
-use bevy::prelude::{App, Msaa, WindowDescriptor};
+use bevy::prelude::{App, Msaa, PluginGroup, default};
 use bevy::DefaultPlugins;
+use bevy::window::{WindowPlugin, Window};
 use hex_map_bevy::GamePlugin;
 
 fn main() {
     App::new()
-        .insert_resource(Msaa { samples: 4 })
-        .insert_resource(WindowDescriptor {
-            title: "Map of hexes".to_string(),
-            width: 1920.,
-            height: 1200.,
-            ..Default::default()
-        })
-        .add_plugins(DefaultPlugins)
-        .add_plugin(GamePlugin)
+        .insert_resource(Msaa::Off)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Hex Map".to_string(),
+                resolution: (800., 600.).into(),
+                // Bind to canvas included in `index.html`
+                canvas: Some("#bevy".to_owned()),
+                // Tells wasm not to override default event handling, like F5 and Ctrl+R
+                prevent_default_event_handling: false,
+                ..default()
+            }),
+            ..default()
+        }))
+        .add_plugins(GamePlugin)
         .run()
 }

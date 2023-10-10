@@ -11,8 +11,9 @@ use bevy::prelude::*;
 use ui::UIPlugin;
 use world::WorldPlugin;
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash, States, Default)]
 pub enum GameState {
+    #[default]
     Loading,
     Playing,
     GameOver,
@@ -22,10 +23,10 @@ pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_state(GameState::Loading)
-            .add_plugin(LoadingPlugin)
-            .add_plugin(UIPlugin)
-            .add_plugin(WorldPlugin);
+        app.add_state::<GameState>()
+            .add_plugins(LoadingPlugin)
+            .add_plugins(UIPlugin)
+            .add_plugins(WorldPlugin);
         #[cfg(debug_assertions)]
         {
             // app.add_plugin(FrameTimeDiagnosticsPlugin::default())

@@ -3,7 +3,7 @@ use std::ops::Index;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::AssetCollection;
 
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct HexImageAssets {
     #[asset(path = "textures/blank.png")]
     pub blank: Handle<Image>,

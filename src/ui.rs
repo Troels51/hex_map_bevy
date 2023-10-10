@@ -1,5 +1,5 @@
-use bevy::prelude::{App, EventWriter, OrthographicProjection, Plugin, Query, ResMut};
-use bevy_egui::{egui, EguiContext, EguiPlugin};
+use bevy::prelude::{App, EventWriter, OrthographicProjection, Plugin, Query, ResMut, Resource, Update};
+use bevy_egui::{egui, EguiContext, EguiPlugin, EguiContexts};
 
 use crate::world::BoardGenerateEvent;
 
@@ -9,18 +9,18 @@ pub struct UIPlugin;
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(EguiPlugin)
+        app.add_plugins(EguiPlugin)
             .insert_resource::<UiState>(UiState { board_size: 10 })
-            .add_system(setup_egui);
+            .add_systems(Update, setup_egui);
     }
 }
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct UiState {
     pub board_size: u32,
 }
 
 fn setup_egui(
-    mut egui_context: ResMut<EguiContext>,
+    mut egui_context: EguiContexts,
     mut ui_state: ResMut<UiState>,
     mut generate_board_events: EventWriter<BoardGenerateEvent>,
     mut projection_query: Query<&mut OrthographicProjection>,

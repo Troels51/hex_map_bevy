@@ -9,12 +9,12 @@ pub struct LoadingPlugin;
 
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(RonAssetPlugin::<Hex>::new(&["hex"]));
+        app.add_plugins(RonAssetPlugin::<Hex>::new(&["hex"]));
         app.add_loading_state(
             LoadingState::new(GameState::Loading)
                 .continue_to_state(GameState::Playing)
-                .with_collection::<hex_models::HexImageAssets>()
-                .with_collection::<hex_descriptions::HexDescriptions>(),
-        );
+        )
+        .add_collection_to_loading_state::<_, hex_models::HexImageAssets>(GameState::Loading)
+        .add_collection_to_loading_state::<_, hex_descriptions::HexDescriptions>(GameState::Loading);
     }
 }
