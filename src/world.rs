@@ -28,8 +28,6 @@ impl Plugin for WorldPlugin {
     }
 }
 
-// //Constants
-// const SPACING: Spacing = Spacing::FlatTop(451.00f32);
 
 const BSIZE: usize = 1000;
 
@@ -56,10 +54,11 @@ fn setup(
     for (_handle, hex) in hex_desc_assets.iter() {
         board.add_possible_hex(hex);
     }
-    // commands.insert_resource(AmbientLight {
-    //     color: Color::WHITE,
-    //     brightness: 0.3,
-    // });
+    board.clear_board();
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 0.3,
+    });
 
     let center = Coordinate::new(100, 100);
     let center_pixel = center.to_pixel(spacing.0);

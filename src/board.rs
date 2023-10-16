@@ -1,12 +1,10 @@
-use bevy::{prelude::{Component, Resource}, reflect::{TypeUuid, TypePath}};
+use bevy::{prelude::{Component, Resource, Handle}, reflect::{TypeUuid, TypePath}};
 use hex2d::Angle;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Resource)]
-pub struct Board {
-    hexes: Vec<Vec<Hex>>,
-    possible_hexes: Vec<Hex>,
-}
+use crate::loading::hex_descriptions::HexDescriptions;
+
+
 
 #[derive(Component, Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum Side {
@@ -89,14 +87,36 @@ impl Hex {
             .collect()
     }
 }
+#[derive(Debug, Default, Clone)]
+struct PossiblitySpace {
+    // Vec of possible Hexes for a position, with the possible rotations
+    possible_hexes: Vec<(Hex, Vec<u8>)>, 
+}
+
+#[derive(Debug, Resource)]
+pub struct Board {
+    vertical_size: usize,
+    horizontal_size: usize,
+    hexes: Vec<Vec<Hex>>,
+    possible_hexes: Vec<Hex>,
+    wave_function : Vec<Vec<PossiblitySpace>> //Nice type bro
+}
 
 impl Board {
     pub fn new(vertical_size: usize, horizontal_size: usize) -> Board {
         Board {
+            vertical_size: vertical_size,
+            horizontal_size: horizontal_size,
             hexes: vec![vec![Hex::default(); vertical_size]; horizontal_size],
             possible_hexes: Vec::new(),
+            wave_function: vec![vec![PossiblitySpace::default(); vertical_size]; horizontal_size]
         }
     }
+
+    pub fn clear_board(&mut self) {
+        self.wave_function =  vec![vec![PossiblitySpace::default(); self.vertical_size]; self.horizontal_size]
+    }
+
     pub fn get(&self, coordinate: hex2d::Coordinate) -> Option<&Hex> {
         self.hexes
             .get(coordinate.x as usize)?
@@ -112,18 +132,22 @@ impl Board {
                     hex.sides[(-direction + Angle::from_int(-(hex.rotation as i8))).to_int::<i8>()
                         as usize];
             }
+            // collapse wave function at that coordinate
+            self.collapse_wave_function(coordinate);
         }
+        
     }
 
-    pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<Hex> {
-        if let Some(hex) = self.get(coordinate) {
-            return self
-                .get_possible_matching_hexes(&hex.sides)
-                .iter()
-                .flat_map(|h| h.get_matching_rotations(&hex.sides))
-                .collect();
-        }
-        Vec::new()
+    fn collapse_wave_function(&mut self, coordinate: hex2d::Coordinate) {
+        let hex = self.get(coordinate);
+        let possibility_space = self.wave_function.get(coordinate.x as usize).unwrap().get(coordinate.y as usize).unwrap();
+    }
+
+    pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> &PossiblitySpace {
+        // If given an invalid coordinate, we just crash :) (HI MEETUP)
+        self.wave_function
+            .get(coordinate.x as usize).unwrap()
+            .get(coordinate.y as usize).unwrap()
     }
     /// Get possible hexes that match the side description
     /// they are not prerotated, so if a hex matches, you need to rotate it in place afterwards
@@ -131,13 +155,20 @@ impl Board {
         let filtered: Vec<&Hex> = self
             .possible_hexes
             .iter()
-            .filter(|p_hex| match_sides(&p_hex.sides, sides))
+            .filter(|p_hex| {
+                match_sides(&p_hex.sides, sides)
+            })
             .collect();
         filtered
     }
 
     pub fn add_possible_hex(&mut self, hex: &Hex) {
-        self.possible_hexes.push(hex.clone())
+        self.possible_hexes.push(hex.clone());
+        for row in self.wave_function.iter_mut() {
+            for col in row {
+                col.possible_hexes.push((hex.clone(), vec![1,2,3,4,5]));
+            }
+        }
     }
 
     pub fn get_rotated_hex_at_coord(&self, coord: hex2d::Coordinate, hex: Hex) -> Option<Hex> {
