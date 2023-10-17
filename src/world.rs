@@ -95,15 +95,16 @@ fn spawn_board(
         let ring = center.ring_iter(ring_radius, Spin::CW(hex2d::Direction::YZ));
         for cell_coord in ring {
             let pixel = cell_coord.to_pixel(spacing.0);
-            let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord);
-            if let Some(hex) = posibility_space.iter().choose(&mut rand::thread_rng()) {
+            let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord).clone();
+            if let Some((hex, rotations)) = posibility_space.possible_hexes.iter().choose(&mut rand::thread_rng()) {
+                let chosen_rotation = rotations.iter().choose(&mut rand::thread_rng()).unwrap();
                 board.set(cell_coord, hex.clone());
                 let model = hex_model_assets.get(hex.name.as_str());
                 //We do some extra math for the y coordinate because hex2d has a coordinate system with y down
                 let mut transform =
                     Transform::from_xyz(pixel.0, 2f32 * center_pixel.1 - pixel.1, 0.0f32);
                 transform.rotate(Quat::from_rotation_z(
-                    hex.rotation as f32 * -std::f32::consts::PI / 3f32,
+                    *chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
                 ));
 
                 commands
@@ -146,6 +147,7 @@ fn generate_board(
             commands.entity(entity).despawn_recursive();
         }
         board.reset();
+        board.clear_board();
         //then trigger spawn of board
         let center = Coordinate::new(100, 100);
         spawn_board(

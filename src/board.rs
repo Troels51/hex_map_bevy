@@ -1,5 +1,5 @@
 use bevy::{prelude::{Component, Resource, Handle}, reflect::{TypeUuid, TypePath}};
-use hex2d::Angle;
+use hex2d::{Angle, Position};
 use serde::{Deserialize, Serialize};
 
 use crate::loading::hex_descriptions::HexDescriptions;
@@ -68,7 +68,7 @@ impl Default for Hex {
 }
 
 impl Hex {
-    pub fn get_matching_rotations(&self, matching: &HexSides) -> Vec<Hex> {
+    pub fn get_matching_rotations(&self, matching: &HexSides) -> Vec<u8> {
         let mut rotations: Vec<u8> = Vec::new();
         let mut sides = self.sides;
         for i in 0..6 {
@@ -78,19 +78,22 @@ impl Hex {
             sides.rotate_right(1);
         }
         rotations
-            .iter()
-            .map(|rotation: &u8| {
-                let mut a = self.clone();
-                a.rotation = *rotation;
-                a
-            })
-            .collect()
     }
 }
 #[derive(Debug, Default, Clone)]
-struct PossiblitySpace {
+pub struct PossiblitySpace {
     // Vec of possible Hexes for a position, with the possible rotations
-    possible_hexes: Vec<(Hex, Vec<u8>)>, 
+    pub possible_hexes: Vec<(Hex, Vec<u8>)>, 
+}
+
+impl PossiblitySpace {
+    fn trim(&mut self, sides: HexSides) {
+        self.possible_hexes.retain(|(hex, _rotations)| match_sides(&hex.sides, &sides));
+        //remove rotations
+        for (hex, rotations) in self.possible_hexes.iter_mut() {
+            *rotations = hex.get_matching_rotations(&sides);
+        }
+    }
 }
 
 #[derive(Debug, Resource)]
@@ -114,7 +117,10 @@ impl Board {
     }
 
     pub fn clear_board(&mut self) {
-        self.wave_function =  vec![vec![PossiblitySpace::default(); self.vertical_size]; self.horizontal_size]
+        self.hexes =  vec![vec![Hex::default(); self.vertical_size]; self.horizontal_size];
+        let all_posibilities = self.possible_hexes.iter().map(|hex| (hex.clone(), vec![1,2,3,4,5]));
+        self.wave_function =  vec![vec![PossiblitySpace { possible_hexes: all_posibilities.collect() }; self.vertical_size]; self.horizontal_size]
+
     }
 
     pub fn get(&self, coordinate: hex2d::Coordinate) -> Option<&Hex> {
@@ -122,6 +128,7 @@ impl Board {
             .get(coordinate.x as usize)?
             .get(coordinate.y as usize)
     }
+
     pub fn set(&mut self, coordinate: hex2d::Coordinate, hex: Hex) {
         self.hexes[coordinate.x as usize][coordinate.y as usize] = hex.clone();
         // After we set the hex, we propagate the constraints to the sorounding hexes
@@ -139,8 +146,10 @@ impl Board {
     }
 
     fn collapse_wave_function(&mut self, coordinate: hex2d::Coordinate) {
-        let hex = self.get(coordinate);
-        let possibility_space = self.wave_function.get(coordinate.x as usize).unwrap().get(coordinate.y as usize).unwrap();
+        let hex = self.get(coordinate).unwrap().clone();
+        let possibility_space: &mut PossiblitySpace = self.wave_function.get_mut(coordinate.x as usize).unwrap().get_mut(coordinate.y as usize).unwrap();
+        possibility_space.trim(hex.sides);
+        // trim posibility space based on hex perimeter
     }
 
     pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> &PossiblitySpace {
@@ -171,12 +180,6 @@ impl Board {
         }
     }
 
-    pub fn get_rotated_hex_at_coord(&self, coord: hex2d::Coordinate, hex: Hex) -> Option<Hex> {
-        let hex = hex;
-        let possible = self.get(coord)?;
-        let rotations = possible.get_matching_rotations(&hex.sides);
-        Some(rotations.get(0).unwrap().clone())
-    }
     pub fn reset(&mut self) {
         for i in self.hexes.iter_mut().flatten() {
             *i = Hex::default();
