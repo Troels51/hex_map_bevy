@@ -24,6 +24,7 @@ impl Plugin for WorldPlugin {
             .add_event::<BoardGenerateEvent>()
             .add_systems(Update, player_camera_control.run_if(in_state(GameState::Playing)))
             .add_systems(Update, generate_board.run_if(in_state(GameState::Playing)))
+            .add_systems(Update, spawn_board.run_if(in_state(GameState::Playing)))
             .add_systems(Update, keyboard_react.run_if(in_state(GameState::Playing)));
     }
 }
@@ -60,7 +61,7 @@ fn setup(
         brightness: 0.3,
     });
 
-    let center = Coordinate::new(100, 100);
+    let center = Coordinate::new(1, 1);
     let center_pixel = center.to_pixel(spacing.0);
 
     //Spawn camera
@@ -70,64 +71,57 @@ fn setup(
     };
     camera.projection.scale = ui_state.board_size as f32;
     commands.spawn(camera);
-
-    spawn_board(
-        center,
-        board,
-        hex_model_assets,
-        spacing,
-        commands,
-        ui_state.board_size,
-    );
 }
 
 fn spawn_board(
-    center: Coordinate,
+    mut commands: Commands,
+    ui_state: Res<UiState>,
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexImageAssets>,
     spacing: Res<Spacing>,
-    mut commands: Commands,
-    board_size: u32,
 ) {
-    let center_pixel = center.to_pixel(spacing.0);
-    // spawn the game board
-    for ring_radius in 0..board_size as i32 {
-        let ring = center.ring_iter(ring_radius, Spin::CW(hex2d::Direction::YZ));
-        for cell_coord in ring {
-            let pixel = cell_coord.to_pixel(spacing.0);
-            let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord).clone();
-            if let Some((hex, rotations)) = posibility_space.possible_hexes.iter().choose(&mut rand::thread_rng()) {
-                let chosen_rotation = rotations.iter().choose(&mut rand::thread_rng()).unwrap();
-                board.set(cell_coord, hex.clone());
-                let model = hex_model_assets.get(hex.name.as_str());
-                //We do some extra math for the y coordinate because hex2d has a coordinate system with y down
-                let mut transform =
-                    Transform::from_xyz(pixel.0, 2f32 * center_pixel.1 - pixel.1, 0.0f32);
-                transform.rotate(Quat::from_rotation_z(
-                    *chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
-                ));
 
-                commands
-                    .spawn(SpriteBundle {
-                        texture: model.clone(),
-                        transform,
-                        ..default()
-                    })
-                    .insert(HexTag)
-                    .insert(hex.clone());
-            }
-            else {
-                let model = hex_model_assets.blank.clone();
-                let transform =
-                    Transform::from_xyz(pixel.0, 2f32 * center_pixel.1 - pixel.1, 0.0f32);
-                commands
-                    .spawn(SpriteBundle {
-                        texture: model.clone(),
-                        transform,
-                        ..default()
-                    })
-                    .insert(HexTag);
-            }
+    let center = Coordinate::new(1, 1).to_pixel(spacing.0);
+
+    // spawn the game board
+    if let Some(cell_coord) = board.get_minimal_entropy_coordinate() {
+        dbg!(cell_coord);
+        let cell_coord = Coordinate::new(cell_coord.0 as i32, cell_coord.1 as i32);
+        let pixel = cell_coord.to_pixel(spacing.0);
+        let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord).clone();
+        if let Some((hex, rotations)) = posibility_space.possible_hexes.iter().choose(&mut rand::thread_rng()) {
+            let chosen_rotation = rotations.iter().choose(&mut rand::thread_rng()).unwrap();
+            let mut hex = hex.clone();
+            hex.rotation = *chosen_rotation;
+            board.set(cell_coord, hex.clone());
+            let model = hex_model_assets.get(hex.name.as_str());
+            //We do some extra math for the y coordinate because hex2d has a coordinate system with y down
+            let mut transform =
+                Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
+            transform.rotate(Quat::from_rotation_z(
+                *chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
+            ));
+
+            commands
+                .spawn(SpriteBundle {
+                    texture: model.clone(),
+                    transform,
+                    ..default()
+                })
+                .insert(HexTag)
+                .insert(hex.clone());
+        }
+        else {
+            let model = hex_model_assets.blank.clone();
+            let transform =
+                Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
+            commands
+                .spawn(SpriteBundle {
+                    texture: model.clone(),
+                    transform,
+                    ..default()
+                })
+                .insert(HexTag);
         }
     }
 }
@@ -149,15 +143,6 @@ fn generate_board(
         board.reset();
         board.clear_board();
         //then trigger spawn of board
-        let center = Coordinate::new(100, 100);
-        spawn_board(
-            center,
-            board,
-            hex_model_assets,
-            spacing,
-            commands,
-            ui_state.board_size,
-        );
     }
     generate_board_events.clear();
 }

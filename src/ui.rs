@@ -10,7 +10,7 @@ pub struct UIPlugin;
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(EguiPlugin)
-            .insert_resource::<UiState>(UiState { board_size: 10 })
+            .insert_resource::<UiState>(UiState { board_size: 4 })
             .add_systems(Update, setup_egui);
     }
 }

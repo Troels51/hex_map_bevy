@@ -94,6 +94,9 @@ impl PossiblitySpace {
             *rotations = hex.get_matching_rotations(&sides);
         }
     }
+    fn entropy(&self) -> usize {
+        self.possible_hexes.iter().fold(0, |acc, (_, rotations)| acc + rotations.len())
+    }
 }
 
 #[derive(Debug, Resource)]
@@ -118,7 +121,7 @@ impl Board {
 
     pub fn clear_board(&mut self) {
         self.hexes =  vec![vec![Hex::default(); self.vertical_size]; self.horizontal_size];
-        let all_posibilities = self.possible_hexes.iter().map(|hex| (hex.clone(), vec![1,2,3,4,5]));
+        let all_posibilities = self.possible_hexes.iter().map(|hex| (hex.clone(), vec![0,1,2,3,4,5]));
         self.wave_function =  vec![vec![PossiblitySpace { possible_hexes: all_posibilities.collect() }; self.vertical_size]; self.horizontal_size]
 
     }
@@ -131,8 +134,12 @@ impl Board {
 
     pub fn set(&mut self, coordinate: hex2d::Coordinate, hex: Hex) {
         self.hexes[coordinate.x as usize][coordinate.y as usize] = hex.clone();
+        self.wave_function[coordinate.x as usize][coordinate.y as usize].possible_hexes.clear();
         // After we set the hex, we propagate the constraints to the sorounding hexes
         for i in coordinate.neighbors() {
+            if i.x < 0 || i.y < 0 {
+                continue;
+            }
             if let Some(direction) = i.direction_to_cw(coordinate) {
                 // We find the direction of the neighbour and then use that to set the side socket to the corresponding original side
                 self.hexes[i.x as usize][i.y as usize].sides[direction.to_int::<i8>() as usize] =
@@ -140,7 +147,7 @@ impl Board {
                         as usize];
             }
             // collapse wave function at that coordinate
-            self.collapse_wave_function(coordinate);
+            self.collapse_wave_function(i);
         }
         
     }
@@ -158,6 +165,22 @@ impl Board {
             .get(coordinate.x as usize).unwrap()
             .get(coordinate.y as usize).unwrap()
     }
+
+    pub fn get_minimal_entropy_coordinate(&self) -> Option<(usize, usize)> {
+        let mut min_entropy = usize::MAX;
+        let mut min_coordinate: Option<(usize, usize)> = Option::None;
+        for (x, row) in self.wave_function.iter().enumerate() {
+            for (y, space) in row.iter().enumerate() {
+                let entropy = space.entropy();
+                if entropy < min_entropy && entropy != 0 {
+                    min_coordinate = Some((x,y));
+                    min_entropy = entropy;
+                }
+            }
+        }
+        min_coordinate
+    }
+
     /// Get possible hexes that match the side description
     /// they are not prerotated, so if a hex matches, you need to rotate it in place afterwards
     pub fn get_possible_matching_hexes(&self, sides: &HexSides) -> Vec<&Hex> {
@@ -175,7 +198,7 @@ impl Board {
         self.possible_hexes.push(hex.clone());
         for row in self.wave_function.iter_mut() {
             for col in row {
-                col.possible_hexes.push((hex.clone(), vec![1,2,3,4,5]));
+                col.possible_hexes.push((hex.clone(), vec![0,1,2,3,4,5]));
             }
         }
     }
@@ -371,7 +394,8 @@ fn possibility_test() {
     ); //Any matches everything, so we need to test the actual memory
        //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
     let possible = b.get_possible_hexes_for_coordinate(center + YZ);
-    let rotations: Vec<u8> = possible.iter().map(|x| x.rotation).collect();
+    
+    let rotations: Vec<u8> = possible.possible_hexes.first().unwrap().1.clone();
     assert_eq!(rotations, vec![1, 2, 3]);
 }
 
@@ -434,6 +458,5 @@ fn matching_rotations_test() {
         Side::Any,
         Side::Any,
     ]);
-    let rotations: Vec<u8> = rotations.iter().map(|x| x.rotation).collect();
     assert_eq!(rotations, vec![1, 2, 3]);
 }
