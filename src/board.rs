@@ -1,3 +1,5 @@
+use std::ops::{BitAndAssign, BitOrAssign};
+
 use bevy::{prelude::{Component, Resource, Handle}, reflect::{TypeUuid, TypePath}};
 use hex2d::{Angle, Position};
 use serde::{Deserialize, Serialize};
@@ -80,22 +82,78 @@ impl Hex {
         rotations
     }
 }
-#[derive(Debug, Default, Clone)]
-pub struct PossiblitySpace {
-    // Vec of possible Hexes for a position, with the possible rotations
-    pub possible_hexes: Vec<(Hex, Vec<u8>)>, 
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Rotations(u8);
+
+impl Rotations {
+    fn set(&mut self, index: u8) {
+        self.0.bitor_assign(1 << index)
+    }
+    fn clear(&mut self, index: u8) {
+        self.0.bitand_assign(1 << index)
+    }
+    pub fn is_valid(&self, index: u8) -> bool {
+        (self.0 >> index & 1) != 0
+    }
+    fn entropy(&self) -> u32 {
+        self.0.count_ones() // Why does count ones return u32 for u8? Optimizations?
+    }
+    fn zero(&self) -> bool {
+        self.0 == 0
+    }
+    fn clear_all(&mut self) {
+        self.0 = 0
+    }
 }
 
-impl PossiblitySpace {
-    fn trim(&mut self, sides: HexSides) {
-        self.possible_hexes.retain(|(hex, _rotations)| match_sides(&hex.sides, &sides));
-        //remove rotations
-        for (hex, rotations) in self.possible_hexes.iter_mut() {
-            *rotations = hex.get_matching_rotations(&sides);
+impl Default for Rotations {
+    fn default() -> Self {
+        Self(0b00111111)
+    }
+}
+
+pub struct RotationsIterator {
+    rotations: Rotations,
+    index: u8,
+}
+impl Iterator for RotationsIterator {
+    type Item = bool;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < 6 {
+            let next = Some(self.rotations.is_valid(self.index));
+            self.index += 1;
+            next
+        }
+        else {
+            None
         }
     }
-    fn entropy(&self) -> usize {
-        self.possible_hexes.iter().fold(0, |acc, (_, rotations)| acc + rotations.len())
+}
+
+impl IntoIterator for Rotations {
+    type Item = bool;
+    type IntoIter = RotationsIterator;
+    fn into_iter(self) -> Self::IntoIter {
+        RotationsIterator { 
+            rotations : self,
+            index: 0,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct PossiblitySpace {
+    // For each hex, a list of valid rotations
+    pub valid_rotations: Vec<Rotations>,
+}
+
+
+
+impl PossiblitySpace {
+    fn entropy(&self) -> u32 {
+        self.valid_rotations.iter().fold(0, |acc, rotations| acc + rotations.entropy())
     }
 }
 
@@ -105,7 +163,7 @@ pub struct Board {
     horizontal_size: usize,
     hexes: Vec<Vec<Hex>>,
     possible_hexes: Vec<Hex>,
-    wave_function : Vec<Vec<PossiblitySpace>> //Nice type bro
+    wave_function : Vec<Vec<PossiblitySpace>>
 }
 
 impl Board {
@@ -121,8 +179,8 @@ impl Board {
 
     pub fn clear_board(&mut self) {
         self.hexes =  vec![vec![Hex::default(); self.vertical_size]; self.horizontal_size];
-        let all_posibilities = self.possible_hexes.iter().map(|hex| (hex.clone(), vec![0,1,2,3,4,5]));
-        self.wave_function =  vec![vec![PossiblitySpace { possible_hexes: all_posibilities.collect() }; self.vertical_size]; self.horizontal_size]
+        let all_posibilities = self.possible_hexes.iter().map(|_| (Rotations::default()));
+        self.wave_function =  vec![vec![PossiblitySpace { valid_rotations: all_posibilities.collect() }; self.vertical_size]; self.horizontal_size]
 
     }
 
@@ -134,7 +192,7 @@ impl Board {
 
     pub fn set(&mut self, coordinate: hex2d::Coordinate, hex: Hex) {
         self.hexes[coordinate.x as usize][coordinate.y as usize] = hex.clone();
-        self.wave_function[coordinate.x as usize][coordinate.y as usize].possible_hexes.clear();
+        self.wave_function[coordinate.x as usize][coordinate.y as usize].valid_rotations.clear();
         // After we set the hex, we propagate the constraints to the sorounding hexes
         for i in coordinate.neighbors() {
             if i.x < 0 || i.y < 0 {
@@ -155,19 +213,36 @@ impl Board {
     fn collapse_wave_function(&mut self, coordinate: hex2d::Coordinate) {
         let hex = self.get(coordinate).unwrap().clone();
         let possibility_space: &mut PossiblitySpace = self.wave_function.get_mut(coordinate.x as usize).unwrap().get_mut(coordinate.y as usize).unwrap();
-        possibility_space.trim(hex.sides);
-        // trim posibility space based on hex perimeter
+        for (index, rotations) in possibility_space.valid_rotations.iter_mut().enumerate() {
+            if rotations.zero() {
+                continue;
+            }
+            let possible = self.possible_hexes.get(index).unwrap();
+            let matches = possible.get_matching_rotations(&hex.sides); // Why is get_matching_rotations not symmetric?
+            rotations.clear_all();
+            for i in &matches {
+                rotations.set(*i);
+            }
+        }
     }
 
-    pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> &PossiblitySpace {
+    pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<(Hex, Rotations)> {
         // If given an invalid coordinate, we just crash :) (HI MEETUP)
-        self.wave_function
+        let space = self.wave_function
             .get(coordinate.x as usize).unwrap()
-            .get(coordinate.y as usize).unwrap()
+            .get(coordinate.y as usize).unwrap();
+        space.valid_rotations.iter().enumerate().filter_map(|(index, rotations)| {
+            if rotations.zero() {
+                None
+            }
+            else {
+                Some((self.possible_hexes.get(index).unwrap().clone(), rotations.clone()))
+            }
+        }).collect()
     }
 
     pub fn get_minimal_entropy_coordinate(&self) -> Option<(usize, usize)> {
-        let mut min_entropy = usize::MAX;
+        let mut min_entropy = u32::MAX;
         let mut min_coordinate: Option<(usize, usize)> = Option::None;
         for (x, row) in self.wave_function.iter().enumerate() {
             for (y, space) in row.iter().enumerate() {
@@ -198,16 +273,11 @@ impl Board {
         self.possible_hexes.push(hex.clone());
         for row in self.wave_function.iter_mut() {
             for col in row {
-                col.possible_hexes.push((hex.clone(), vec![0,1,2,3,4,5]));
+                col.valid_rotations.push(Rotations::default());
             }
         }
     }
 
-    pub fn reset(&mut self) {
-        for i in self.hexes.iter_mut().flatten() {
-            *i = Hex::default();
-        }
-    }
 }
 
 #[test]
@@ -393,10 +463,10 @@ fn possibility_test() {
         core::mem::discriminant(&Side::Grass)
     ); //Any matches everything, so we need to test the actual memory
        //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
-    let possible = b.get_possible_hexes_for_coordinate(center + YZ);
+    let possible = b.get_possible_hexes_for_coordinate(dbg!(center + YZ));
     
-    let rotations: Vec<u8> = possible.possible_hexes.first().unwrap().1.clone();
-    assert_eq!(rotations, vec![1, 2, 3]);
+    let rotations: Rotations = possible.first().unwrap().1.clone();
+    assert_eq!(rotations, Rotations(0b1110));
 }
 
 #[test]

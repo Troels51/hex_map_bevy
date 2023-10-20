@@ -85,21 +85,20 @@ fn spawn_board(
 
     // spawn the game board
     if let Some(cell_coord) = board.get_minimal_entropy_coordinate() {
-        dbg!(cell_coord);
         let cell_coord = Coordinate::new(cell_coord.0 as i32, cell_coord.1 as i32);
         let pixel = cell_coord.to_pixel(spacing.0);
-        let posibility_space = board.get_possible_hexes_for_coordinate(cell_coord).clone();
-        if let Some((hex, rotations)) = posibility_space.possible_hexes.iter().choose(&mut rand::thread_rng()) {
-            let chosen_rotation = rotations.iter().choose(&mut rand::thread_rng()).unwrap();
+        let possible_hexes = board.get_possible_hexes_for_coordinate(cell_coord).clone();
+        if let Some((hex, rotations)) = possible_hexes.iter().choose(&mut rand::thread_rng()) {
+            let (chosen_rotation, _) = rotations.into_iter().enumerate().filter(|(_, valid)| *valid).choose(&mut rand::thread_rng()).unwrap();
             let mut hex = hex.clone();
-            hex.rotation = *chosen_rotation;
+            hex.rotation = chosen_rotation as u8;
             board.set(cell_coord, hex.clone());
             let model = hex_model_assets.get(hex.name.as_str());
             //We do some extra math for the y coordinate because hex2d has a coordinate system with y down
             let mut transform =
                 Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
             transform.rotate(Quat::from_rotation_z(
-                *chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
+                chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
             ));
 
             commands
@@ -128,11 +127,8 @@ fn spawn_board(
 
 fn generate_board(
     mut board: ResMut<Board>,
-    hex_model_assets: Res<HexImageAssets>,
     hex_entities: Query<Entity, With<HexTag>>,
-    spacing: Res<Spacing>,
     mut commands: Commands,
-    ui_state: Res<UiState>,
     mut generate_board_events: EventReader<BoardGenerateEvent>,
 ) {
     if !generate_board_events.is_empty() {
@@ -140,7 +136,6 @@ fn generate_board(
         for entity in hex_entities.iter() {
             commands.entity(entity).despawn_recursive();
         }
-        board.reset();
         board.clear_board();
         //then trigger spawn of board
     }
