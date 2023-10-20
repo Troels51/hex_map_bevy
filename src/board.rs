@@ -1,10 +1,10 @@
 use std::ops::{BitAndAssign, BitOrAssign};
 
-use bevy::{prelude::{Component, Resource, Handle}, reflect::{TypeUuid, TypePath}};
-use hex2d::{Angle, Position};
+use bevy::{prelude::{Component, Resource}, reflect::{TypeUuid, TypePath}};
+use hex2d::{Angle};
 use serde::{Deserialize, Serialize};
 
-use crate::loading::hex_descriptions::HexDescriptions;
+
 
 
 

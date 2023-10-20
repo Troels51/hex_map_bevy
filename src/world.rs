@@ -1,8 +1,8 @@
 use bevy::app::App;
 use bevy::render::camera::Camera;
-use bevy::{ecs::schedule::SystemSet, prelude::*};
+use bevy::{prelude::*};
 
-use hex2d::{self, Coordinate, Spin};
+use hex2d::{self, Coordinate};
 use rand::prelude::IteratorRandom;
 
 use crate::board::{Board, Hex};
@@ -46,7 +46,7 @@ struct Spacing(hex2d::Spacing);
 
 fn setup(
     mut commands: Commands,
-    hex_model_assets: Res<HexImageAssets>,
+    _hex_model_assets: Res<HexImageAssets>,
     hex_desc_assets: Res<Assets<Hex>>,
     spacing: Res<Spacing>,
     mut board: ResMut<Board>,
@@ -75,7 +75,7 @@ fn setup(
 
 fn spawn_board(
     mut commands: Commands,
-    ui_state: Res<UiState>,
+    _ui_state: Res<UiState>,
     mut board: ResMut<Board>,
     hex_model_assets: Res<HexImageAssets>,
     spacing: Res<Spacing>,
