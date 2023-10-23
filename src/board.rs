@@ -1,7 +1,7 @@
-use std::ops::{BitAndAssign, BitOrAssign};
+use std::{ops::{BitAndAssign, BitOrAssign}, collections::HashMap};
 
 use bevy::{prelude::{Component, Resource}, reflect::{TypeUuid, TypePath}};
-use hex2d::{Angle};
+use hex2d::{Angle, Coordinate};
 use serde::{Deserialize, Serialize};
 
 
@@ -155,64 +155,55 @@ impl PossiblitySpace {
     fn entropy(&self) -> u32 {
         self.valid_rotations.iter().fold(0, |acc, rotations| acc + rotations.entropy())
     }
+    fn new(size: usize) -> Self {
+        Self { valid_rotations: vec![Rotations::default(); size]}
+    }
 }
 
 #[derive(Debug, Resource)]
 pub struct Board {
-    vertical_size: usize,
-    horizontal_size: usize,
-    hexes: Vec<Vec<Hex>>,
+    hexes: HashMap<Coordinate, (Hex, PossiblitySpace)>,
     possible_hexes: Vec<Hex>,
-    wave_function : Vec<Vec<PossiblitySpace>>
 }
 
+
 impl Board {
-    pub fn new(vertical_size: usize, horizontal_size: usize) -> Board {
+    pub fn new(possible_hexes: Vec<Hex>) -> Board {
         Board {
-            vertical_size: vertical_size,
-            horizontal_size: horizontal_size,
-            hexes: vec![vec![Hex::default(); vertical_size]; horizontal_size],
-            possible_hexes: Vec::new(),
-            wave_function: vec![vec![PossiblitySpace::default(); vertical_size]; horizontal_size]
+            hexes: HashMap::from([(Coordinate::new(0, 0), (Hex::default(), PossiblitySpace::new(possible_hexes.len())) )]),
+            possible_hexes: possible_hexes,
         }
     }
 
     pub fn clear_board(&mut self) {
-        self.hexes =  vec![vec![Hex::default(); self.vertical_size]; self.horizontal_size];
-        let all_posibilities = self.possible_hexes.iter().map(|_| (Rotations::default()));
-        self.wave_function =  vec![vec![PossiblitySpace { valid_rotations: all_posibilities.collect() }; self.vertical_size]; self.horizontal_size]
-
+        self.hexes =  HashMap::from([(Coordinate::new(0, 0), (Hex::default(), PossiblitySpace::new(self.possible_hexes.len())) )]);
     }
 
     pub fn get(&self, coordinate: hex2d::Coordinate) -> Option<&Hex> {
-        self.hexes
-            .get(coordinate.x as usize)?
-            .get(coordinate.y as usize)
+        Some(&self.hexes.get(&coordinate)?.0)
     }
 
     pub fn set(&mut self, coordinate: hex2d::Coordinate, hex: Hex) {
-        self.hexes[coordinate.x as usize][coordinate.y as usize] = hex.clone();
-        self.wave_function[coordinate.x as usize][coordinate.y as usize].valid_rotations.clear();
+        let current_hex = hex.clone();
+        let tile: &mut (Hex, PossiblitySpace) = self.hexes.get_mut(&coordinate).unwrap();
+        tile.0 = hex;
+        tile.1.valid_rotations.clear();
         // After we set the hex, we propagate the constraints to the sorounding hexes
         for i in coordinate.neighbors() {
-            if i.x < 0 || i.y < 0 {
-                continue;
-            }
             if let Some(direction) = i.direction_to_cw(coordinate) {
                 // We find the direction of the neighbour and then use that to set the side socket to the corresponding original side
-                self.hexes[i.x as usize][i.y as usize].sides[direction.to_int::<i8>() as usize] =
-                    hex.sides[(-direction + Angle::from_int(-(hex.rotation as i8))).to_int::<i8>()
-                        as usize];
+                let tile = self.hexes.entry(i).or_insert_with(|| (Hex::default(), PossiblitySpace::new(self.possible_hexes.len())));
+                tile.0.sides[direction.to_int::<i8>() as usize] = current_hex.sides[(-direction + Angle::from_int(-(current_hex.rotation as i8))).to_int::<i8>() as usize];
             }
             // collapse wave function at that coordinate
             self.collapse_wave_function(i);
         }
-        
     }
+
 
     fn collapse_wave_function(&mut self, coordinate: hex2d::Coordinate) {
         let hex = self.get(coordinate).unwrap().clone();
-        let possibility_space: &mut PossiblitySpace = self.wave_function.get_mut(coordinate.x as usize).unwrap().get_mut(coordinate.y as usize).unwrap();
+        let possibility_space: &mut PossiblitySpace = &mut self.hexes.get_mut(&coordinate).unwrap().1;
         for (index, rotations) in possibility_space.valid_rotations.iter_mut().enumerate() {
             if rotations.zero() {
                 continue;
@@ -227,10 +218,7 @@ impl Board {
     }
 
     pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<(Hex, Rotations)> {
-        // If given an invalid coordinate, we just crash :) (HI MEETUP)
-        let space = self.wave_function
-            .get(coordinate.x as usize).unwrap()
-            .get(coordinate.y as usize).unwrap();
+        let space = &self.hexes.get(&coordinate).unwrap().1;
         space.valid_rotations.iter().enumerate().filter_map(|(index, rotations)| {
             if rotations.zero() {
                 None
@@ -241,16 +229,14 @@ impl Board {
         }).collect()
     }
 
-    pub fn get_minimal_entropy_coordinate(&self) -> Option<(usize, usize)> {
+    pub fn get_minimal_entropy_coordinate(&self) -> Option<Coordinate> {
         let mut min_entropy = u32::MAX;
-        let mut min_coordinate: Option<(usize, usize)> = Option::None;
-        for (x, row) in self.wave_function.iter().enumerate() {
-            for (y, space) in row.iter().enumerate() {
-                let entropy = space.entropy();
-                if entropy < min_entropy && entropy != 0 {
-                    min_coordinate = Some((x,y));
-                    min_entropy = entropy;
-                }
+        let mut min_coordinate: Option<Coordinate> = Option::None;
+        for (coordinate, (_hex, space)) in &self.hexes {
+            let entropy = space.entropy();
+            if entropy < min_entropy && entropy != 0 {
+                min_coordinate = Some(*coordinate);
+                min_entropy = entropy;
             }
         }
         min_coordinate
@@ -268,28 +254,12 @@ impl Board {
             .collect();
         filtered
     }
-
-    pub fn add_possible_hex(&mut self, hex: &Hex) {
-        self.possible_hexes.push(hex.clone());
-        for row in self.wave_function.iter_mut() {
-            for col in row {
-                col.valid_rotations.push(Rotations::default());
-            }
-        }
-    }
-
-}
-
-#[test]
-fn new_board_test() {
-    let b = Board::new(3, 3);
-    assert_eq!(b.hexes.iter().fold(0, |acc, v| acc + v.len()), 9);
 }
 
 #[test]
 fn set_hex_test() {
     use hex2d::{Coordinate, Direction::*};
-    let mut b = Board::new(3, 3);
+    let mut b = Board::new(vec![]);
     let hex = Hex {
         sides: [
             Side::Grass,
@@ -334,7 +304,7 @@ fn set_hex_test() {
 #[test]
 fn set_rotated_hex_test() {
     use hex2d::{Coordinate, Direction::*};
-    let mut b = Board::new(3, 3);
+    let mut b = Board::new(vec![]);
     let hex = Hex {
         sides: [
             Side::Grass,
@@ -440,7 +410,6 @@ fn match_hex_side_test() {
 fn possibility_test() {
     use hex2d::{Coordinate, Direction::*};
 
-    let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
         sides: [
@@ -453,7 +422,7 @@ fn possibility_test() {
         ],
         rotation: 0,
     };
-    b.add_possible_hex(&h1);
+    let mut b = Board::new(vec![h1.clone()]);
 
     let center = Coordinate::new(1, 1);
     b.set(center, h1);
@@ -463,7 +432,7 @@ fn possibility_test() {
         core::mem::discriminant(&Side::Grass)
     ); //Any matches everything, so we need to test the actual memory
        //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
-    let possible = b.get_possible_hexes_for_coordinate(dbg!(center + YZ));
+    let possible = b.get_possible_hexes_for_coordinate(center + YZ);
     
     let rotations: Rotations = possible.first().unwrap().1.clone();
     assert_eq!(rotations, Rotations(0b1110));
@@ -472,7 +441,6 @@ fn possibility_test() {
 #[test]
 fn possible_matching_test() {
     use hex2d::{Coordinate, Direction::*};
-    let mut b = Board::new(3, 3);
     let h1 = Hex {
         name: String::from("A001"),
         sides: [
@@ -485,7 +453,7 @@ fn possible_matching_test() {
         ],
         rotation: 0,
     };
-    b.add_possible_hex(&h1);
+    let mut b = Board::new(vec![h1.clone()]);
 
     let center = Coordinate::new(1, 1);
     b.set(center, h1.clone());

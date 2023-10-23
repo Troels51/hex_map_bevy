@@ -16,7 +16,7 @@ pub struct WorldPlugin;
 /// Player logic is only active during the State `GameState::Playing`
 impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(Board::new(BSIZE, BSIZE))
+        app.insert_resource(Board::new(vec![]))
             .insert_resource(Spacing(hex2d::Spacing::FlatTop(450f32)))
             .add_systems(OnEnter(GameState::Playing),setup)
             .add_systems(OnExit(GameState::Playing), teardown)
@@ -52,10 +52,9 @@ fn setup(
     mut board: ResMut<Board>,
     ui_state: Res<UiState>,
 ) {
-    for (_handle, hex) in hex_desc_assets.iter() {
-        board.add_possible_hex(hex);
-    }
-    board.clear_board();
+    let possible_hexes : Vec<Hex> = hex_desc_assets.iter().map(|desc| desc.1).cloned().collect();
+
+    *board = Board::new(possible_hexes);
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.3,
@@ -85,7 +84,6 @@ fn spawn_board(
 
     // spawn the game board
     if let Some(cell_coord) = board.get_minimal_entropy_coordinate() {
-        let cell_coord = Coordinate::new(cell_coord.0 as i32, cell_coord.1 as i32);
         let pixel = cell_coord.to_pixel(spacing.0);
         let possible_hexes = board.get_possible_hexes_for_coordinate(cell_coord).clone();
         if let Some((hex, rotations)) = possible_hexes.iter().choose(&mut rand::thread_rng()) {
