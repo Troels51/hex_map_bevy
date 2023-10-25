@@ -1,5 +1,7 @@
-use bevy::prelude::{App, EventWriter, OrthographicProjection, Plugin, Query, ResMut, Resource, Update};
-use bevy_egui::{egui, EguiPlugin, EguiContexts};
+use bevy::prelude::{
+    App, EventWriter, OrthographicProjection, Plugin, Query, ResMut, Resource, Update,
+};
+use bevy_egui::{egui, EguiContexts, EguiPlugin};
 
 use crate::world::BoardGenerateEvent;
 

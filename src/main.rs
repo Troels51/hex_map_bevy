@@ -1,6 +1,6 @@
-use bevy::prelude::{App, Msaa, PluginGroup, default};
+use bevy::prelude::{default, App, Msaa, PluginGroup};
+use bevy::window::{Window, WindowPlugin};
 use bevy::DefaultPlugins;
-use bevy::window::{WindowPlugin, Window};
 use hex_map_bevy::GamePlugin;
 
 fn main() {

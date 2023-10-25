@@ -1,12 +1,14 @@
-use std::{ops::{BitAndAssign, BitOrAssign}, collections::HashMap};
+use std::{
+    collections::HashMap,
+    ops::{BitAndAssign, BitOrAssign},
+};
 
-use bevy::{prelude::{Component, Resource}, reflect::{TypeUuid, TypePath}};
+use bevy::{
+    prelude::{Component, Resource},
+    reflect::{TypePath, TypeUuid},
+};
 use hex2d::{Angle, Coordinate};
 use serde::{Deserialize, Serialize};
-
-
-
-
 
 #[derive(Component, Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum Side {
@@ -122,8 +124,7 @@ impl Iterator for RotationsIterator {
             let next = Some(self.rotations.is_valid(self.index));
             self.index += 1;
             next
-        }
-        else {
+        } else {
             None
         }
     }
@@ -133,9 +134,22 @@ impl IntoIterator for Rotations {
     type Item = bool;
     type IntoIter = RotationsIterator;
     fn into_iter(self) -> Self::IntoIter {
-        RotationsIterator { 
-            rotations : self,
+        RotationsIterator {
+            rotations: self,
             index: 0,
+        }
+    }
+}
+
+impl PossiblitySpace {
+    fn entropy(&self) -> u32 {
+        self.valid_rotations
+            .iter()
+            .fold(0, |acc, rotations| acc + rotations.entropy())
+    }
+    fn new(size: usize) -> Self {
+        Self {
+            valid_rotations: vec![Rotations::default(); size],
         }
     }
 }
@@ -146,61 +160,68 @@ pub struct PossiblitySpace {
     pub valid_rotations: Vec<Rotations>,
 }
 
-
-
-impl PossiblitySpace {
-    fn entropy(&self) -> u32 {
-        self.valid_rotations.iter().fold(0, |acc, rotations| acc + rotations.entropy())
-    }
-    fn new(size: usize) -> Self {
-        Self { valid_rotations: vec![Rotations::default(); size]}
-    }
+#[derive(Debug)]
+struct Cell {
+    hex: Hex,
+    possibility_space: PossiblitySpace,
 }
 
+impl Cell {
+    fn new(len: usize) -> Self {
+        Cell {
+            hex: Hex::default(),
+            possibility_space: PossiblitySpace::new(len),
+        }
+    }
+}
 #[derive(Debug, Resource)]
 pub struct Board {
-    hexes: HashMap<Coordinate, (Hex, PossiblitySpace)>,
+    hexes: HashMap<Coordinate, Cell>,
     possible_hexes: Vec<Hex>,
 }
-
 
 impl Board {
     pub fn new(possible_hexes: Vec<Hex>) -> Board {
         Board {
-            hexes: HashMap::from([(Coordinate::new(0, 0), (Hex::default(), PossiblitySpace::new(possible_hexes.len())) )]),
+            hexes: HashMap::from([(Coordinate::new(0, 0), Cell::new(possible_hexes.len()))]),
             possible_hexes: possible_hexes,
         }
     }
 
     pub fn clear_board(&mut self) {
-        self.hexes =  HashMap::from([(Coordinate::new(0, 0), (Hex::default(), PossiblitySpace::new(self.possible_hexes.len())) )]);
+        self.hexes = HashMap::from([(Coordinate::new(0, 0), Cell::new(self.possible_hexes.len()))]);
     }
 
     pub fn get(&self, coordinate: hex2d::Coordinate) -> Option<&Hex> {
-        Some(&self.hexes.get(&coordinate)?.0)
+        Some(&self.hexes.get(&coordinate)?.hex)
     }
 
     pub fn set(&mut self, coordinate: hex2d::Coordinate, hex: Hex) {
         let current_hex = hex.clone();
-        let tile: &mut (Hex, PossiblitySpace) = self.hexes.get_mut(&coordinate).unwrap();
-        tile.0 = hex;
-        tile.1.valid_rotations.clear();
+        let tile: &mut Cell = self.hexes.get_mut(&coordinate).unwrap();
+        tile.hex = hex;
+        tile.possibility_space.valid_rotations.clear();
         // After we set the hex, we propagate the constraints to the sorounding hexes
         for i in coordinate.neighbors() {
             if let Some(direction) = i.direction_to_cw(coordinate) {
                 // We find the direction of the neighbour and then use that to set the side socket to the corresponding original side
-                let tile = self.hexes.entry(i).or_insert_with(|| (Hex::default(), PossiblitySpace::new(self.possible_hexes.len())));
-                tile.0.sides[direction.to_int::<i8>() as usize] = current_hex.sides[(-direction + Angle::from_int(-(current_hex.rotation as i8))).to_int::<i8>() as usize];
+                let tile = self
+                    .hexes
+                    .entry(i)
+                    .or_insert_with(|| Cell::new(self.possible_hexes.len()));
+                tile.hex.sides[direction.to_int::<i8>() as usize] =
+                    current_hex.sides[(-direction + Angle::from_int(-(current_hex.rotation as i8)))
+                        .to_int::<i8>() as usize];
             }
             // collapse wave function at that coordinate
             self.collapse_wave_function(i);
         }
     }
 
-
     fn collapse_wave_function(&mut self, coordinate: hex2d::Coordinate) {
         let hex = self.get(coordinate).unwrap().clone();
-        let possibility_space: &mut PossiblitySpace = &mut self.hexes.get_mut(&coordinate).unwrap().1;
+        let possibility_space: &mut PossiblitySpace =
+            &mut self.hexes.get_mut(&coordinate).unwrap().possibility_space;
         for (index, rotations) in possibility_space.valid_rotations.iter_mut().enumerate() {
             if rotations.zero() {
                 continue;
@@ -214,23 +235,33 @@ impl Board {
         }
     }
 
-    pub fn get_possible_hexes_for_coordinate(&self, coordinate: hex2d::Coordinate) -> Vec<(Hex, Rotations)> {
-        let space = &self.hexes.get(&coordinate).unwrap().1;
-        space.valid_rotations.iter().enumerate().filter_map(|(index, rotations)| {
-            if rotations.zero() {
-                None
-            }
-            else {
-                Some((self.possible_hexes.get(index).unwrap().clone(), rotations.clone()))
-            }
-        }).collect()
+    pub fn get_possible_hexes_for_coordinate(
+        &self,
+        coordinate: hex2d::Coordinate,
+    ) -> Vec<(Hex, Rotations)> {
+        let space = &self.hexes.get(&coordinate).unwrap().possibility_space;
+        space
+            .valid_rotations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, rotations)| {
+                if rotations.zero() {
+                    None
+                } else {
+                    Some((
+                        self.possible_hexes.get(index).unwrap().clone(),
+                        rotations.clone(),
+                    ))
+                }
+            })
+            .collect()
     }
 
     pub fn get_minimal_entropy_coordinate(&self) -> Option<Coordinate> {
         let mut min_entropy = u32::MAX;
         let mut min_coordinate: Option<Coordinate> = Option::None;
-        for (coordinate, (_hex, space)) in &self.hexes {
-            let entropy = space.entropy();
+        for (coordinate, cell) in &self.hexes {
+            let entropy = cell.possibility_space.entropy();
             if entropy < min_entropy && entropy != 0 {
                 min_coordinate = Some(*coordinate);
                 min_entropy = entropy;
@@ -245,9 +276,7 @@ impl Board {
         let filtered: Vec<&Hex> = self
             .possible_hexes
             .iter()
-            .filter(|p_hex| {
-                match_sides(&p_hex.sides, sides)
-            })
+            .filter(|p_hex| match_sides(&p_hex.sides, sides))
             .collect();
         filtered
     }
@@ -430,7 +459,7 @@ fn possibility_test() {
     ); //Any matches everything, so we need to test the actual memory
        //The top side is GRASS, so a match is possible if the hex is rotated, 1,2 or 3 times
     let possible = b.get_possible_hexes_for_coordinate(center + YZ);
-    
+
     let rotations: Rotations = possible.first().unwrap().1.clone();
     assert_eq!(rotations, Rotations(0b1110));
 }

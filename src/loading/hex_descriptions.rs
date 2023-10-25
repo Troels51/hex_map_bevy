@@ -1,11 +1,8 @@
-
-
 use bevy::prelude::{AssetServer, Component, Handle, Resource};
 use bevy_asset_loader::prelude::AssetCollection;
 use serde::{Deserialize, Serialize};
 
 use crate::board::Hex;
-
 
 #[derive(Component, Serialize, Deserialize, Copy, Clone, Debug)]
 pub struct Angle(hex2d::Angle);
@@ -134,7 +131,6 @@ pub struct HexDescriptions {
     // pub m009: Handle<Hex>,
     // #[asset(path = "hexes/M010.hex")]
     // pub m010: Handle<Hex>,
-
     #[asset(path = "hexes/Dragon1.hex")]
     pub dragon1: Handle<Hex>,
     #[asset(path = "hexes/Dragon2.hex")]

@@ -1,6 +1,6 @@
 use bevy::app::App;
+use bevy::prelude::*;
 use bevy::render::camera::Camera;
-use bevy::{prelude::*};
 
 use hex2d::{self, Coordinate};
 use rand::prelude::IteratorRandom;
@@ -18,11 +18,14 @@ impl Plugin for WorldPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(Board::new(vec![]))
             .insert_resource(Spacing(hex2d::Spacing::FlatTop(450f32)))
-            .add_systems(OnEnter(GameState::Playing),setup)
+            .add_systems(OnEnter(GameState::Playing), setup)
             .add_systems(OnExit(GameState::Playing), teardown)
             .add_systems(OnExit(GameState::GameOver), teardown)
             .add_event::<BoardGenerateEvent>()
-            .add_systems(Update, player_camera_control.run_if(in_state(GameState::Playing)))
+            .add_systems(
+                Update,
+                player_camera_control.run_if(in_state(GameState::Playing)),
+            )
             .add_systems(Update, generate_board.run_if(in_state(GameState::Playing)))
             .add_systems(Update, spawn_board.run_if(in_state(GameState::Playing)))
             .add_systems(Update, keyboard_react.run_if(in_state(GameState::Playing)));
@@ -49,7 +52,7 @@ fn setup(
     mut board: ResMut<Board>,
     ui_state: Res<UiState>,
 ) {
-    let possible_hexes : Vec<Hex> = hex_desc_assets.iter().map(|desc| desc.1).cloned().collect();
+    let possible_hexes: Vec<Hex> = hex_desc_assets.iter().map(|desc| desc.1).cloned().collect();
 
     *board = Board::new(possible_hexes);
     commands.insert_resource(AmbientLight {
@@ -76,7 +79,6 @@ fn spawn_board(
     hex_model_assets: Res<HexImageAssets>,
     spacing: Res<Spacing>,
 ) {
-
     let center = Coordinate::new(0, 0).to_pixel(spacing.0);
 
     // spawn the game board
@@ -84,14 +86,18 @@ fn spawn_board(
         let pixel = cell_coord.to_pixel(spacing.0);
         let possible_hexes = board.get_possible_hexes_for_coordinate(cell_coord).clone();
         if let Some((hex, rotations)) = possible_hexes.iter().choose(&mut rand::thread_rng()) {
-            let (chosen_rotation, _) = rotations.into_iter().enumerate().filter(|(_, valid)| *valid).choose(&mut rand::thread_rng()).unwrap();
+            let (chosen_rotation, _) = rotations
+                .into_iter()
+                .enumerate()
+                .filter(|(_, valid)| *valid)
+                .choose(&mut rand::thread_rng())
+                .unwrap();
             let mut hex = hex.clone();
             hex.rotation = chosen_rotation as u8;
             board.set(cell_coord, hex.clone());
             let model = hex_model_assets.get(hex.name.as_str());
             //We do some extra math for the y coordinate because hex2d has a coordinate system with y down
-            let mut transform =
-                Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
+            let mut transform = Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
             transform.rotate(Quat::from_rotation_z(
                 chosen_rotation as f32 * -std::f32::consts::PI / 3f32,
             ));
@@ -104,11 +110,9 @@ fn spawn_board(
                 })
                 .insert(HexTag)
                 .insert(hex.clone());
-        }
-        else {
+        } else {
             let model = hex_model_assets.blank.clone();
-            let transform =
-                Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
+            let transform = Transform::from_xyz(pixel.0, 2f32 * center.1 - pixel.1, 0.0f32);
             commands
                 .spawn(SpriteBundle {
                     texture: model.clone(),
