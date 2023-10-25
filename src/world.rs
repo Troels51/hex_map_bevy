@@ -29,9 +29,6 @@ impl Plugin for WorldPlugin {
     }
 }
 
-
-const BSIZE: usize = 1000;
-
 #[derive(Default, Event)]
 pub struct BoardGenerateEvent;
 
@@ -60,7 +57,7 @@ fn setup(
         brightness: 0.3,
     });
 
-    let center = Coordinate::new(1, 1);
+    let center = Coordinate::new(0, 0);
     let center_pixel = center.to_pixel(spacing.0);
 
     //Spawn camera
@@ -80,7 +77,7 @@ fn spawn_board(
     spacing: Res<Spacing>,
 ) {
 
-    let center = Coordinate::new(1, 1).to_pixel(spacing.0);
+    let center = Coordinate::new(0, 0).to_pixel(spacing.0);
 
     // spawn the game board
     if let Some(cell_coord) = board.get_minimal_entropy_coordinate() {

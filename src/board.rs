@@ -31,16 +31,12 @@ impl PartialEq for Side {
     }
 }
 
-/// If we save the possiblity space for each coordinate
-/// It would be nr_hexes * 6 * boardsize = 100 * 6 * 100 = 60000
-///
 pub const HEX_SIDES: usize = 6;
 
 type HexSides = [Side; HEX_SIDES];
 
 // Check if 2 side descriptions match
 fn match_sides(side1: &HexSides, side2: &HexSides) -> bool {
-    //There is probably a better way to do this :(
     // We concat side1 with itself, and check if side2 is contained in it
     let v: Vec<Side> = side1.iter().chain(side1.iter()).cloned().collect();
     for seq in v.windows(6) {
@@ -71,8 +67,9 @@ impl Default for Hex {
 
 impl Hex {
     pub fn get_matching_rotations(&self, matching: &HexSides) -> Vec<u8> {
+        //There is probably a better way to do this :(
         let mut rotations: Vec<u8> = Vec::new();
-        let mut sides = self.sides;
+        let mut sides = self.sides.clone();
         for i in 0..6 {
             if sides == *matching {
                 rotations.push(i as u8);

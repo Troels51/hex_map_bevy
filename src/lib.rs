@@ -35,9 +35,3 @@ impl Plugin for GamePlugin {
         }
     }
 }
-
-// .add_plugin(PickingPlugin)
-// .add_plugin(InteractablePickingPlugin)
-// .add_plugin(DebugCursorPickingPlugin)
-// .add_plugin(DebugCursorPickingPlugin)
-// .add_plugin(FourXCameraPlugin)
